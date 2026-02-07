@@ -1,0 +1,33 @@
+---
+title: "Walsoft Contact-Level Clustering"
+---
+
+## Business objective
+
+Segment contacts into actionable behavioral groups to support outreach planning, CRM prioritization, and relationship management.
+
+## What changes after you deploy this pipeline
+
+- You stop treating all contacts the same.
+- You get stable, interpretable contact segments that drive outreach cadence, prioritization, and risk flags.
+- You can justify communication decisions using measurable behavioral signals (call volume, duration, timing, recency, and gaps).
+
+## How this project is structured
+
+This project is deliberately split into two layers:
+
+- **Decision layer (this site)** — explains *why* the segmentation exists and *how* it supports real business decisions.
+- **Analytical layer (next chapter)** — shows the full, reproducible unsupervised learning pipeline, from raw call logs to validated contact clusters.
+
+Open the chapter: **Walsoft Contact Segmentation**.
+
+---
+
+## About the author
+
+**Philip Tambiti Leo Walekhwa**  
+Data Scientist | Business Strategist | Entrepreneur | Educator
+
+This project is part of a broader applied research and portfolio initiative focused on practical machine learning, analytics, and decision-support systems.
+
+- Profile & research context: https://ai.walsoftcomputers.com/

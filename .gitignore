@@ -1,0 +1,56 @@
+# -------------------------
+# Quarto / site outputs
+# -------------------------
+_site/
+.quarto/
+.quarto-cache/
+*.html
+
+# -------------------------
+# Jupyter / Python
+# -------------------------
+.ipynb_checkpoints/
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# -------------------------
+# Virtual environments
+# -------------------------
+.venv/
+venv/
+ENV/
+env/
+
+# -------------------------
+# OS / editor
+# -------------------------
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# -------------------------
+# Data privacy (safe defaults)
+# - Dataset is anonymized, but we still avoid committing data/exports.
+# -------------------------
+data/raw/
+data/processed/
+reports/figures/
+reports/tables/
+*.parquet
+*.feather
+*.pkl
+*.pickle
+
+# -------------------------
+# Local artifacts/logs
+# -------------------------
+*.log
+.cache/
+tmp/
+
+/.quarto/
+**/*.quarto_ipynb

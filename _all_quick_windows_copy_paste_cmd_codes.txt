@@ -1,0 +1,8 @@
+# ===============================================
+# Quick Windows CMD snippets for project files
+# ===============================================
+# This snippet prints the contents of all .qmd and .md files
+# Each file is preceded by a header line ==== filename ====
+# Use: copy-paste the line below into CMD from your project folder
+
+for %f in (*.qmd *.md) do @echo ==== %f ==== & type "%f" & echo

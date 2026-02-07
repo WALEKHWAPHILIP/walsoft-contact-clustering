@@ -1,0 +1,25 @@
+project:
+  type: website
+  output-dir: _site
+
+website:
+  title: "Walsoft Contact-Level Clustering"
+  sidebar:
+    style: "docked"
+    contents:
+      - href: index.qmd
+        text: "Home"
+      - href: walsoft_contact_segmentation.qmd
+        text: "Walsoft Contact Segmentation"
+
+format:
+  html:
+    toc: true
+    number-sections: true
+    code-fold: false
+
+execute:
+  echo: true
+  warning: false
+  message: false
+  freeze: false
