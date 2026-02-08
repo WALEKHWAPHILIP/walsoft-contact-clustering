@@ -6,28 +6,34 @@ title: "Walsoft Contact-Level Clustering"
 
 Segment contacts into actionable behavioral groups to support outreach planning, CRM prioritization, and relationship management.
 
-## What changes after you deploy this pipeline
+## What you get
 
-- You stop treating all contacts the same.
-- You get stable, interpretable contact segments that drive outreach cadence, prioritization, and risk flags.
-- You can justify communication decisions using measurable behavioral signals (call volume, duration, timing, recency, and gaps).
+- Stable, interpretable contact segments that drive outreach cadence, prioritization, and risk flags
+- Justification for decisions using measurable behavioral signals (volume, duration, timing, recency, and gaps)
+- Reproducible pipeline with robustness checks (not just clustering plots)
 
 ## How this project is structured
 
-This project is deliberately split into two layers:
+This project is split into two layers:
 
-- **Decision layer (this site)** — explains *why* the segmentation exists and *how* it supports real business decisions.
-- **Analytical layer (next chapter)** — shows the full, reproducible unsupervised learning pipeline, from raw call logs to validated contact clusters.
+- **Decision layer (this site)** — explains why the segmentation exists and how it supports business decisions
+- **Analytical layer (next chapter)** — the full pipeline from call logs to validated clusters
 
 Open the chapter: **Walsoft Contact Segmentation**.
 
----
+## Data, privacy, and license
+
+- **Canonical dataset (used at runtime):**  
+  https://learn.walsoftcomputers.com/machine_learning/walsoft_phonecall/original_dataset_with_instructions/walsoft_semi_categorized_phone_dataset.csv
+- **Kaggle mirror:**  
+  https://www.kaggle.com/datasets/walekhwatlphilip/walsoftai-semi-categorized-1-user-call-behaviour
+- **Dataset license:** CC0 (Public Domain)
+- **Privacy posture:** identifiers are anonymised/pseudonymised per provenance; this repo does not commit raw data and avoids exporting identifier-like fields by default.
 
 ## About the author
 
 **Philip Tambiti Leo Walekhwa**  
 Data Scientist | Business Strategist | Entrepreneur | Educator
 
-This project is part of a broader applied research and portfolio initiative focused on practical machine learning, analytics, and decision-support systems.
-
-- Profile & research context: https://ai.walsoftcomputers.com/
+Profile: https://ai.walsoftcomputers.com/  
+Repo: https://github.com/WALEKHWAPHILIP/walsoft-contact-clustering

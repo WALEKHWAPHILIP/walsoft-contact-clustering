@@ -4,11 +4,13 @@ type: software
 title: "Walsoft Contact-Level Clustering (Unsupervised Segmentation)"
 authors:
   - family-names: "Walekhwa"
-    given-names: "Philip Leo Tambiti"
+    given-names: "Philip Tambiti Leo"
 repository-code: "https://github.com/WALEKHWAPHILIP/walsoft-contact-clustering"
-url: "https://WALEKHWAPHILIP.github.io/walsoft-contact-clustering/"
+url: "https://walekhwaphilip.github.io/walsoft-contact-clustering/"
 license: "MIT"
+version: "1.0.0"
 date-released: "2026-02-08"
+
 keywords:
   - "unsupervised learning"
   - "clustering"
@@ -28,15 +30,27 @@ preferred-citation:
   title: "Walsoft Contact-Level Clustering (Unsupervised Segmentation)"
   authors:
     - family-names: "Walekhwa"
-      given-names: "Philip Leo Tambiti"
+      given-names: "Philip Tambiti Leo"
   year: 2026
+  version: "1.0.0"
   url: "https://github.com/WALEKHWAPHILIP/walsoft-contact-clustering"
-  notes: "Includes a GitHub Pages live report."
+  notes: "Live report available via GitHub Pages."
 
 references:
   - type: dataset
-    title: "Walsoft Semi-categorized Phone Dataset (Call Behaviour)"
+    title: "Walsoftai Semi-Categorized 1-User Call Behaviour (2022–2024) — canonical CSV"
     authors:
       - family-names: "Walekhwa"
-        given-names: "Philip Leo Tambiti"
+        given-names: "Philip Tambiti Leo"
+    license: "CC0-1.0"
     url: "https://learn.walsoftcomputers.com/machine_learning/walsoft_phonecall/original_dataset_with_instructions/walsoft_semi_categorized_phone_dataset.csv"
+    notes: "Anonymised outgoing call-log metadata for a single small-business phone line; identifiers pseudonymised/anonymised."
+
+  - type: dataset
+    title: "Walsoftai Semi-Categorized 1-User Call Behaviour (2022–2024) — Kaggle mirror"
+    authors:
+      - family-names: "Walekhwa"
+        given-names: "Philip Tambiti Leo"
+    license: "CC0-1.0"
+    url: "https://www.kaggle.com/datasets/walekhwatlphilip/walsoftai-semi-categorized-1-user-call-behaviour"
+    notes: "Kaggle-hosted mirror for discoverability and notebooks."
