@@ -1,5 +1,5 @@
 ## Live site (GitHub Pages)
-https://walekhwaphip.github.io/walsoft-contact-clustering/
+https://walekhwaphilip.github.io/walsoft-contact-clustering/
 
 # Walsoft Contact-Level Clustering (Unsupervised Segmentation)
 
