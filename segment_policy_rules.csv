@@ -1,5 +1,0 @@
-segment_label,decision_use,operational_rule,typical_pattern
-Core active relationships,Prioritization and retention,Assign owner and SLA; proactive check-ins,"High calls, many active days, low recency"
-Warm occasional contacts,Nurture and growth,Monthly/quarterly outreach; reminders; targeted offers,"Moderate repeat calls, moderate tenure, mid recency"
-Rare deep conversations,High-touch exceptions and win-back,Personalized follow-up; preserve context; targeted reactivation if dormant,Few calls but long conversations (high median duration / long-call share)
-One-off / low-engagement contacts,Noise filtering and automation,Exclude from priority lists; automate nurture only,"One call, one day, small total duration, often old"

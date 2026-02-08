@@ -1,5 +1,0 @@
-cluster,segment_label,n_contacts,primary_action,n_calls,n_days_active,calls_per_active_day,total_dur_sec,median_dur_sec,long_call_share,recency_days,tenure_days,share_business_hours,share_evening,share_early_morning,share_late_night,share_open_day,share_closed_day
-2,One-off / low-engagement contacts,1599,Deprioritize by default; automate nurture; reactivate only if new activity appears,1.0,1.0,1.0,61.0,37.0,0.0,501.3315162037037,0.0,1.0,0.0,0.0,0.0,1.0,0.0
-3,Warm occasional contacts,225,Nurture cadence (monthly/quarterly); structured check-ins to increase engagement,5.0,4.0,1.3333333333333333,270.0,34.0,0.0,259.38498842592594,312.90842592592594,1.0,0.0,0.0,0.0,1.0,0.0
-1,Core active relationships,176,Retention + priority servicing; assign owner; proactive follow-ups,35.5,21.0,1.707142857142857,2776.0,35.5,0.0,84.80216435185184,676.5946643518519,0.9118788819875776,0.047619047619047616,0.0,0.0,0.9834155701754386,0.016584429824561403
-0,Rare deep conversations,91,High-touch when active; preserve context; personalized re-engagement when dormant,2.0,2.0,1.2,1553.0,494.0,0.6,621.2208333333333,0.8139236111111111,1.0,0.0,0.0,0.0,1.0,0.0
