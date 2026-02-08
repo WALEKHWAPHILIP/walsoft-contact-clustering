@@ -31,13 +31,13 @@ https://learn.walsoftcomputers.com/machine_learning/walsoft_phonecall/original_d
 **Kaggle mirror (discoverability + notebooks):**  
 https://www.kaggle.com/datasets/walekhwatlphilip/walsoftai-semi-categorized-1-user-call-behaviour
 
-**Dataset license:** CC0 (Public Domain). This allows copying, modification, and commercial use without attribution (attribution appreciated).
+**Dataset license:** CC0-1.0 (Public Domain). This allows copying, modification, and commercial use without attribution (attribution appreciated).
 
 ## Privacy, ethics, and legal notes (dataset)
 
 - Phone numbers are anonymised to numeric identifiers; names are pseudonymous role labels (no real names).
 - No direct identifiers (addresses, emails, ID numbers) are included; only call metadata is retained.
-- The dataset is provided under CC0, but users should treat behavioural data ethically and avoid re-identification attempts.
+- The dataset is provided under CC0-1.0, but users should treat behavioural data ethically and avoid re-identification attempts.
 - This repository does **not** commit raw data; the pipeline loads from the public URL at runtime.
 - Outputs avoid identifier-like fields by default; a hashed `contact_id` is used only for stable, non-reversible joins.
 
