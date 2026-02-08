@@ -1,18 +1,42 @@
 cff-version: 1.2.0
-message: "If you use this project, please cite it."
+message: "If you use this repository in academic work, reports, or products, please cite it."
 type: software
 title: "Walsoft Contact-Level Clustering (Unsupervised Segmentation)"
 authors:
   - family-names: "Walekhwa"
-    given-names: "Philip Tambiti Leo"
+    given-names: "Philip Leo Tambiti"
 repository-code: "https://github.com/WALEKHWAPHILIP/walsoft-contact-clustering"
 url: "https://WALEKHWAPHILIP.github.io/walsoft-contact-clustering/"
 license: "MIT"
+date-released: "2026-02-08"
+keywords:
+  - "unsupervised learning"
+  - "clustering"
+  - "k-means"
+  - "segmentation"
+  - "crm analytics"
+  - "contact analytics"
+  - "quarto"
+
+abstract: >
+  End-to-end, decision-driven contact segmentation using unsupervised learning.
+  Includes audit, feature engineering, robust preprocessing, K-selection, interpretation,
+  robustness tests (ARI), and PCA visualization, with privacy-first hashed identifiers.
+
+preferred-citation:
+  type: software
+  title: "Walsoft Contact-Level Clustering (Unsupervised Segmentation)"
+  authors:
+    - family-names: "Walekhwa"
+      given-names: "Philip Leo Tambiti"
+  year: 2026
+  url: "https://github.com/WALEKHWAPHILIP/walsoft-contact-clustering"
+  notes: "Includes a GitHub Pages live report."
 
 references:
   - type: dataset
     title: "Walsoft Semi-categorized Phone Dataset (Call Behaviour)"
     authors:
       - family-names: "Walekhwa"
-        given-names: "Philip Tambiti Leo"
+        given-names: "Philip Leo Tambiti"
     url: "https://learn.walsoftcomputers.com/machine_learning/walsoft_phonecall/original_dataset_with_instructions/walsoft_semi_categorized_phone_dataset.csv"
