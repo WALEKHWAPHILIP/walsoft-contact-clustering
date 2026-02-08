@@ -1,8 +1,3 @@
-Here’s a **2026-style, portfolio-ready README** you can paste in (it keeps your voice, adds the dataset link properly, and tightens structure + expectations). It also fixes a few “missing pieces” recruiters typically look for: quickstart, reproducibility notes, outputs, and licensing/citation pointers.
-
-Copy-paste this entire README:
-
-````md
 ## Live site (GitHub Pages)
 https://walekhwaphilip.github.io/walsoft-contact-clustering/
 
