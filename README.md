@@ -1,3 +1,6 @@
+## Live site (GitHub Pages)
+https://walekhwaphip.github.io/walsoft-contact-clustering/
+
 # Walsoft Contact-Level Clustering (Unsupervised Segmentation)
 
 **Business objective:** Segment contacts into actionable behavioral groups (contact types) to support outreach planning, CRM prioritization, and relationship management.
