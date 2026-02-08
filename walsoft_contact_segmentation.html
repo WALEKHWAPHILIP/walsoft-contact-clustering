@@ -286,7 +286,7 @@ window.Quarto = {
   <li><a href="#limitations-and-how-not-to-misuse-this" id="toc-limitations-and-how-not-to-misuse-this" class="nav-link" data-scroll-target="#limitations-and-how-not-to-misuse-this"><span class="header-section-number">10.5</span> Limitations and “how not to misuse this”</a></li>
   <li><a href="#optional-export-portfolio-artifacts-off-by-default" id="toc-optional-export-portfolio-artifacts-off-by-default" class="nav-link" data-scroll-target="#optional-export-portfolio-artifacts-off-by-default"><span class="header-section-number">10.6</span> Optional: export portfolio artifacts (OFF by default)</a></li>
   </ul></li>
-  <li><a href="#phase-10-final-wrap-up-competition-framing-decision-narrative" id="toc-phase-10-final-wrap-up-competition-framing-decision-narrative" class="nav-link" data-scroll-target="#phase-10-final-wrap-up-competition-framing-decision-narrative"><span class="header-section-number">11</span> Phase 10 — Final wrap-up (competition framing + decision narrative)</a>
+  <li><a href="#phase-9-final-wrap-up-competition-framing-decision-narrative" id="toc-phase-9-final-wrap-up-competition-framing-decision-narrative" class="nav-link" data-scroll-target="#phase-9-final-wrap-up-competition-framing-decision-narrative"><span class="header-section-number">11</span> Phase 9 — Final wrap-up (competition framing + decision narrative)</a>
   <ul class="collapse">
   <li><a href="#competition-prompt-what-we-were-given" id="toc-competition-prompt-what-we-were-given" class="nav-link" data-scroll-target="#competition-prompt-what-we-were-given"><span class="header-section-number">11.1</span> Competition prompt (what we were given)</a></li>
   <li><a href="#what-we-had-to-produce-deliverable-definition" id="toc-what-we-had-to-produce-deliverable-definition" class="nav-link" data-scroll-target="#what-we-had-to-produce-deliverable-definition"><span class="header-section-number">11.2</span> What we had to produce (deliverable definition)</a></li>
@@ -363,7 +363,7 @@ window.Quarto = {
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Phase 1 Audit → Phase 2 Contact-level features → Phase 3 Preprocess → Phase 4 Choose K → Phase 5 Fit/Interpret → then stability/ARI → sensitivity (feature blocks) → PCA viz → final recommendations.</p>
+<p>Phase 1 Audit → Phase 2 Contact-level features → Phase 3 Preprocess → Phase 4 Choose K → Phase 5 Fit &amp; interpret → Phase 6 Robustness (ARI stability + feature-block sensitivity) → Phase 7 PCA visualization (interpretation only) → Phase 8 Final deliverables → Phase 9 Final wrap-up (competition framing + decision narrative).</p>
 </div>
 </div>
 </section>
@@ -376,7 +376,7 @@ window.Quarto = {
 <h3 data-number="2.2" class="anchored" data-anchor-id="load-the-dataset"><span class="header-section-number">2.2</span> Load the dataset</h3>
 <section id="load-data" class="level4" data-number="2.2.1">
 <h4 data-number="2.2.1" class="anchored" data-anchor-id="load-data"><span class="header-section-number">2.2.1</span> Load data</h4>
-<div id="0746bb72" class="cell" data-execution_count="2">
+<div id="cf9775a8" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load dataset (no assumptions, no output)</span></span>
@@ -386,7 +386,7 @@ window.Quarto = {
 </section>
 <section id="dataset-overview" class="level4" data-number="2.2.2">
 <h4 data-number="2.2.2" class="anchored" data-anchor-id="dataset-overview"><span class="header-section-number">2.2.2</span> Dataset overview</h4>
-<div id="77cedc85" class="cell" data-execution_count="3">
+<div id="a50e7a4c" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Dataset overview (executive-level structural metrics)</span></span>
@@ -408,7 +408,7 @@ window.Quarto = {
 <span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>dataset_overview</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="72">
+<div class="cell-output cell-output-display" data-execution_count="3">
 <div>
 
 
@@ -450,7 +450,7 @@ window.Quarto = {
 </section>
 <section id="column-inventory-schema-inspection" class="level4" data-number="2.2.3">
 <h4 data-number="2.2.3" class="anchored" data-anchor-id="column-inventory-schema-inspection"><span class="header-section-number">2.2.3</span> Column inventory (schema inspection)</h4>
-<div id="cce9abd0" class="cell" data-execution_count="4">
+<div id="a5a74622" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Column inventory (schema audit table)</span></span>
@@ -468,7 +468,7 @@ window.Quarto = {
 <span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>column_inventory</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="73">
+<div class="cell-output cell-output-display" data-execution_count="4">
 <div>
 
 
@@ -555,13 +555,13 @@ window.Quarto = {
 </section>
 <section id="sample-records-visual-sanity-check" class="level4" data-number="2.2.4">
 <h4 data-number="2.2.4" class="anchored" data-anchor-id="sample-records-visual-sanity-check"><span class="header-section-number">2.2.4</span> Sample records (visual sanity check)</h4>
-<div id="1771b323" class="cell" data-execution_count="5">
+<div id="58d5d1c4" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Sample records (human sanity check only)</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df.head(<span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="74">
+<div class="cell-output cell-output-display" data-execution_count="5">
 <div>
 
 
@@ -628,7 +628,7 @@ window.Quarto = {
 </section>
 <section id="identify-key-columns-robust-from-the-data-itself" class="level3" data-number="2.3">
 <h3 data-number="2.3" class="anchored" data-anchor-id="identify-key-columns-robust-from-the-data-itself"><span class="header-section-number">2.3</span> Identify key columns (robust, from the data itself)</h3>
-<div id="aed7a7f2" class="cell" data-execution_count="6">
+<div id="1784f69d" class="cell" data-execution_count="6">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Identify key columns (schema audit, no assumptions)</span></span>
@@ -696,7 +696,7 @@ window.Quarto = {
 <span id="cb5-63"><a href="#cb5-63" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-64"><a href="#cb5-64" aria-hidden="true" tabindex="-1"></a>schema_audit</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="75">
+<div class="cell-output cell-output-display" data-execution_count="6">
 <div>
 
 
@@ -763,7 +763,7 @@ window.Quarto = {
 <h3 data-number="2.4" class="anchored" data-anchor-id="build-canonical-timestamp-and-numeric-duration-audit-quality-checks"><span class="header-section-number">2.4</span> Build canonical timestamp and numeric duration (audit-quality checks)</h3>
 <section id="validate-required-schema" class="level4" data-number="2.4.1">
 <h4 data-number="2.4.1" class="anchored" data-anchor-id="validate-required-schema"><span class="header-section-number">2.4.1</span> Validate required schema</h4>
-<div id="0d47330b" class="cell" data-execution_count="7">
+<div id="ea97e24a" class="cell" data-execution_count="7">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Validate required columns exist (hard audit gate)</span></span>
@@ -784,7 +784,7 @@ window.Quarto = {
 <span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>schema_validation</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="76">
+<div class="cell-output cell-output-display" data-execution_count="7">
 <div>
 
 
@@ -823,7 +823,7 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<div id="5e87f66d" class="cell" data-execution_count="8">
+<div id="7f57348f" class="cell" data-execution_count="8">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stop execution if schema is invalid</span></span>
@@ -834,7 +834,7 @@ window.Quarto = {
 </section>
 <section id="build-canonical-fields" class="level4" data-number="2.4.2">
 <h4 data-number="2.4.2" class="anchored" data-anchor-id="build-canonical-fields"><span class="header-section-number">2.4.2</span> Build canonical fields</h4>
-<div id="e1bbdda4" class="cell" data-execution_count="9">
+<div id="f18bd06c" class="cell" data-execution_count="9">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Canonical timestamp</span></span>
@@ -855,7 +855,7 @@ window.Quarto = {
 </section>
 <section id="data-integrity-audit" class="level4" data-number="2.4.3">
 <h4 data-number="2.4.3" class="anchored" data-anchor-id="data-integrity-audit"><span class="header-section-number">2.4.3</span> Data integrity audit</h4>
-<div id="47783ac0" class="cell" data-execution_count="10">
+<div id="df04998b" class="cell" data-execution_count="10">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>bad_ts <span class="op">=</span> <span class="bu">int</span>(df[<span class="st">"call_ts"</span>].isna().<span class="bu">sum</span>())</span>
@@ -888,7 +888,7 @@ window.Quarto = {
 <span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>integrity_audit</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="79">
+<div class="cell-output cell-output-display" data-execution_count="10">
 <div>
 
 
@@ -946,7 +946,7 @@ window.Quarto = {
 </section>
 <section id="hard-integrity-gates" class="level4" data-number="2.4.4">
 <h4 data-number="2.4.4" class="anchored" data-anchor-id="hard-integrity-gates"><span class="header-section-number">2.4.4</span> Hard integrity gates</h4>
-<div id="b3c98911" class="cell" data-execution_count="11">
+<div id="b5172b38" class="cell" data-execution_count="11">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> bad_ts <span class="op">==</span> <span class="dv">0</span>, <span class="st">"Timestamp parsing failed for some rows."</span></span>
@@ -958,7 +958,7 @@ window.Quarto = {
 </section>
 <section id="hash-a-stable-contact_id-do-not-export-raw-identifiers" class="level3" data-number="2.5">
 <h3 data-number="2.5" class="anchored" data-anchor-id="hash-a-stable-contact_id-do-not-export-raw-identifiers"><span class="header-section-number">2.5</span> Hash a stable <code>contact_id</code> (do not export raw identifiers)</h3>
-<div id="eccccedb" class="cell" data-execution_count="12">
+<div id="9ef9004a" class="cell" data-execution_count="12">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> stable_contact_id(x: <span class="bu">int</span> <span class="op">|</span> <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="bu">str</span>:</span>
@@ -977,7 +977,7 @@ window.Quarto = {
 </section>
 <section id="derive-time-band-openclosed-day-flags-hard-constraints" class="level3" data-number="2.6">
 <h3 data-number="2.6" class="anchored" data-anchor-id="derive-time-band-openclosed-day-flags-hard-constraints"><span class="header-section-number">2.6</span> Derive time-band + open/closed-day flags (hard constraints)</h3>
-<div id="2a62906b" class="cell" data-execution_count="13">
+<div id="9d471b86" class="cell" data-execution_count="13">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"hour"</span>] <span class="op">=</span> df[<span class="st">"call_ts"</span>].dt.hour</span>
@@ -1006,7 +1006,7 @@ window.Quarto = {
 <span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>df[[<span class="st">"call_ts"</span>,<span class="st">"hour"</span>,<span class="st">"dow"</span>,<span class="st">"time_band"</span>,<span class="st">"is_open_day"</span>,<span class="st">"is_closed_day"</span>]].head(<span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="82">
+<div class="cell-output cell-output-display" data-execution_count="13">
 <div>
 
 
@@ -1077,7 +1077,7 @@ window.Quarto = {
 </section>
 <section id="executive-summary-table-stakeholder-ready" class="level3" data-number="2.7">
 <h3 data-number="2.7" class="anchored" data-anchor-id="executive-summary-table-stakeholder-ready"><span class="header-section-number">2.7</span> Executive summary table (stakeholder-ready)</h3>
-<div id="072b856e" class="cell" data-execution_count="14">
+<div id="aec8ffc2" class="cell" data-execution_count="14">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>cat_col <span class="op">=</span> <span class="st">"category"</span> <span class="cf">if</span> <span class="st">"category"</span> <span class="kw">in</span> df.columns <span class="cf">else</span> <span class="va">None</span></span>
@@ -1112,7 +1112,7 @@ window.Quarto = {
 <span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>})</span>
 <span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>summary</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="83">
+<div class="cell-output cell-output-display" data-execution_count="14">
 <div>
 
 
@@ -1189,7 +1189,7 @@ window.Quarto = {
 </section>
 <section id="visual-1-monthly-call-volume-coverage" class="level3" data-number="2.8">
 <h3 data-number="2.8" class="anchored" data-anchor-id="visual-1-monthly-call-volume-coverage"><span class="header-section-number">2.8</span> Visual 1 — Monthly call volume (coverage)</h3>
-<div id="b98e9aaa" class="cell" data-execution_count="15">
+<div id="e3a08e51" class="cell" data-execution_count="15">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1197,7 +1197,7 @@ window.Quarto = {
 </figure>
 </div>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="84">
+<div class="cell-output cell-output-display" data-execution_count="15">
 <div>
 
 
@@ -1279,7 +1279,7 @@ window.Quarto = {
 </section>
 <section id="visual-2-duration-distribution-outlier-awareness" class="level3" data-number="2.9">
 <h3 data-number="2.9" class="anchored" data-anchor-id="visual-2-duration-distribution-outlier-awareness"><span class="header-section-number">2.9</span> Visual 2 — Duration distribution (outlier awareness)</h3>
-<div id="8a581bc0" class="cell" data-execution_count="16">
+<div id="a90cc37e" class="cell" data-execution_count="16">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1294,7 +1294,7 @@ window.Quarto = {
 </figure>
 </div>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="85">
+<div class="cell-output cell-output-display" data-execution_count="16">
 <div>
 
 
@@ -1347,7 +1347,7 @@ window.Quarto = {
 </section>
 <section id="visual-3-time-band-mix-openclosed-day-mix-hard-constraint-diagnostics" class="level3" data-number="2.10">
 <h3 data-number="2.10" class="anchored" data-anchor-id="visual-3-time-band-mix-openclosed-day-mix-hard-constraint-diagnostics"><span class="header-section-number">2.10</span> Visual 3 — Time-band mix + open/closed-day mix (hard-constraint diagnostics)</h3>
-<div id="df70d8e8" class="cell" data-execution_count="17">
+<div id="916ffe20" class="cell" data-execution_count="17">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1362,7 +1362,7 @@ window.Quarto = {
 </figure>
 </div>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="86">
+<div class="cell-output cell-output-display" data-execution_count="17">
 <pre><code>(                n_calls
  time_band              
  business_hours    20624
@@ -1426,7 +1426,7 @@ This is the modeling dataset for clustering.</p>
 <section id="guardrails-setup" class="level3" data-number="3.1">
 <h3 data-number="3.1" class="anchored" data-anchor-id="guardrails-setup"><span class="header-section-number">3.1</span> Guardrails &amp; Setup</h3>
 <p>We first ensure all required columns from Phase 1 exist. This prevents accidental execution on incomplete data.</p>
-<div id="81eda818" class="cell" data-execution_count="18">
+<div id="60dda59c" class="cell" data-execution_count="18">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Guardrails: ensure critical columns exist</span></span>
@@ -1438,7 +1438,7 @@ This is the modeling dataset for clustering.</p>
 </details>
 </div>
 <p>Helper for safe division (avoids division by zero):</p>
-<div id="d3f0d75e" class="cell" data-execution_count="19">
+<div id="d3e79e09" class="cell" data-execution_count="19">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> safe_div(a, b):</span>
@@ -1446,7 +1446,7 @@ This is the modeling dataset for clustering.</p>
 </details>
 </div>
 <p>Reference timestamp for recency calculations:</p>
-<div id="1bc8e1f2" class="cell" data-execution_count="20">
+<div id="d517cc34" class="cell" data-execution_count="20">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>ASOF_TS <span class="op">=</span> df[<span class="st">"call_ts"</span>].<span class="bu">max</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1457,7 +1457,7 @@ This is the modeling dataset for clustering.</p>
 <section id="base-aggregations" class="level3" data-number="3.2">
 <h3 data-number="3.2" class="anchored" data-anchor-id="base-aggregations"><span class="header-section-number">3.2</span> Base Aggregations</h3>
 <p>Compute <strong>core contact-level metrics</strong>: total calls, active days, duration statistics, and recency/tenure measures.</p>
-<div id="7ad362f5" class="cell" data-execution_count="21">
+<div id="577c29c4" class="cell" data-execution_count="21">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> df.groupby(<span class="st">"contact_id"</span>, as_index<span class="op">=</span><span class="va">False</span>)</span>
@@ -1492,7 +1492,7 @@ This is the modeling dataset for clustering.</p>
 <section id="long-call-share" class="level3" data-number="3.3">
 <h3 data-number="3.3" class="anchored" data-anchor-id="long-call-share"><span class="header-section-number">3.3</span> Long-call Share</h3>
 <p>Define <strong>long calls</strong> as those exceeding the 95th percentile. Compute each contact’s share of long calls to capture <strong>tail behavior</strong>.</p>
-<div id="7d5a8874" class="cell" data-execution_count="22">
+<div id="04376692" class="cell" data-execution_count="22">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>LONG_CALL_THRESHOLD <span class="op">=</span> <span class="bu">float</span>(df[<span class="st">"dur_sec"</span>].quantile(<span class="fl">0.95</span>))</span>
@@ -1509,7 +1509,7 @@ This is the modeling dataset for clustering.</p>
 <section id="time-band-mix" class="level3" data-number="3.4">
 <h3 data-number="3.4" class="anchored" data-anchor-id="time-band-mix"><span class="header-section-number">3.4</span> Time-Band Mix</h3>
 <p>Contacts may have different temporal activity patterns. We compute <strong>proportions of calls per time band</strong> (business hours, evening, late night, early morning).</p>
-<div id="1226f28c" class="cell" data-execution_count="23">
+<div id="cbad48d4" class="cell" data-execution_count="23">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>band_mix <span class="op">=</span> (</span>
@@ -1534,7 +1534,7 @@ This is the modeling dataset for clustering.</p>
 <section id="open-vs-closed-day-mix" class="level3" data-number="3.5">
 <h3 data-number="3.5" class="anchored" data-anchor-id="open-vs-closed-day-mix"><span class="header-section-number">3.5</span> Open vs Closed Day Mix</h3>
 <p>Capture <strong>day-of-week activity patterns</strong>. Open vs.&nbsp;closed days are mutually exclusive and sum to 1 per contact.</p>
-<div id="ebfe45a3" class="cell" data-execution_count="24">
+<div id="080006dc" class="cell" data-execution_count="24">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>day_mix <span class="op">=</span> (</span>
@@ -1556,7 +1556,7 @@ This is the modeling dataset for clustering.</p>
 <section id="category-mix-optional" class="level3" data-number="3.6">
 <h3 data-number="3.6" class="anchored" data-anchor-id="category-mix-optional"><span class="header-section-number">3.6</span> Category Mix (Optional)</h3>
 <p>For interpretation, compute the <strong>top-K category proportions per contact</strong>, preserving sparsity and numeric representation.</p>
-<div id="0abc961a" class="cell" data-execution_count="25">
+<div id="b526daed" class="cell" data-execution_count="25">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>TOPK <span class="op">=</span> <span class="dv">8</span></span>
@@ -1578,7 +1578,7 @@ This is the modeling dataset for clustering.</p>
 <section id="merge-all-features" class="level3" data-number="3.7">
 <h3 data-number="3.7" class="anchored" data-anchor-id="merge-all-features"><span class="header-section-number">3.7</span> Merge All Features</h3>
 <p>Combine <strong>base, long-call, time-band, day-mix, and category features</strong> into a single contact-level table.</p>
-<div id="21cf01f6" class="cell" data-execution_count="26">
+<div id="addb32a5" class="cell" data-execution_count="26">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>contact_features <span class="op">=</span> (</span>
@@ -1602,7 +1602,7 @@ This is the modeling dataset for clustering.</p>
 <pre><code>contact_features.shape = (2091, 28)
 Long-call threshold (95th pct, seconds) = 396.0</code></pre>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="95">
+<div class="cell-output cell-output-display" data-execution_count="26">
 <div>
 
 
@@ -1853,7 +1853,7 @@ Long-call threshold (95th pct, seconds) = 396.0</code></pre>
 <section id="quick-feature-audit" class="level3" data-number="3.8">
 <h3 data-number="3.8" class="anchored" data-anchor-id="quick-feature-audit"><span class="header-section-number">3.8</span> Quick Feature Audit</h3>
 <p>Sanity check <strong>feature completeness and distribution</strong>.</p>
-<div id="6150040c" class="cell" data-execution_count="27">
+<div id="a9e44c9d" class="cell" data-execution_count="27">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>feature_audit <span class="op">=</span> pd.DataFrame({</span>
@@ -1867,7 +1867,7 @@ Long-call threshold (95th pct, seconds) = 396.0</code></pre>
 <span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>})</span>
 <span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>feature_audit</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="96">
+<div class="cell-output cell-output-display" data-execution_count="27">
 <div>
 
 
@@ -1906,7 +1906,7 @@ Long-call threshold (95th pct, seconds) = 396.0</code></pre>
 <section id="top-activity-contacts" class="level3" data-number="3.9">
 <h3 data-number="3.9" class="anchored" data-anchor-id="top-activity-contacts"><span class="header-section-number">3.9</span> Top Activity Contacts</h3>
 <p>Inspect <strong>most active contacts</strong> without exposing raw identifiers. This helps validate engineered features and distribution of behavioral metrics.</p>
-<div id="d9ea2d47" class="cell" data-execution_count="28">
+<div id="d560ed74" class="cell" data-execution_count="28">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>top_activity <span class="op">=</span> contact_features.sort_values(<span class="st">"n_calls"</span>, ascending<span class="op">=</span><span class="va">False</span>).head(<span class="dv">10</span>)[</span>
@@ -1916,7 +1916,7 @@ Long-call threshold (95th pct, seconds) = 396.0</code></pre>
 <span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>]</span>
 <span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>top_activity.T</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="97">
+<div class="cell-output cell-output-display" data-execution_count="28">
 <div>
 
 
@@ -2230,7 +2230,7 @@ Distance-based clustering is scale-sensitive. <strong>RobustScaler uses median a
 <hr>
 <section id="freeze-an-interpretation-copy-read-only-view" class="level3" data-number="4.1">
 <h3 data-number="4.1" class="anchored" data-anchor-id="freeze-an-interpretation-copy-read-only-view"><span class="header-section-number">4.1</span> Freeze an interpretation copy (read-only view)</h3>
-<div id="90b33faf" class="cell" data-execution_count="29">
+<div id="a90bad80" class="cell" data-execution_count="29">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>contact_features_view <span class="op">=</span> contact_features.copy()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -2240,7 +2240,7 @@ Distance-based clustering is scale-sensitive. <strong>RobustScaler uses median a
 </section>
 <section id="define-feature-blocks-for-interpretation-and-sensitivity-analysis" class="level3" data-number="4.2">
 <h3 data-number="4.2" class="anchored" data-anchor-id="define-feature-blocks-for-interpretation-and-sensitivity-analysis"><span class="header-section-number">4.2</span> Define feature blocks (for interpretation and sensitivity analysis)</h3>
-<div id="da951564" class="cell" data-execution_count="30">
+<div id="c9f7922e" class="cell" data-execution_count="30">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -2250,7 +2250,7 @@ Distance-based clustering is scale-sensitive. <strong>RobustScaler uses median a
 <span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> RobustScaler</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<div id="227c1d69" class="cell" data-execution_count="31">
+<div id="706bf5ed" class="cell" data-execution_count="31">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># -----------------------------</span></span>
@@ -2292,7 +2292,7 @@ Distance-based clustering is scale-sensitive. <strong>RobustScaler uses median a
 <span id="cb30-37"><a href="#cb30-37" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb30-38"><a href="#cb30-38" aria-hidden="true" tabindex="-1"></a>FEATURE_BLOCKS</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="100">
+<div class="cell-output cell-output-display" data-execution_count="31">
 <pre><code>{'volume': ['n_calls',
   'n_days_active',
   'calls_per_active_day',
@@ -2324,7 +2324,7 @@ Distance-based clustering is scale-sensitive. <strong>RobustScaler uses median a
 <section id="select-default-model-features-no-timestamps-no-category-mix-by-default" class="level3" data-number="4.3">
 <h3 data-number="4.3" class="anchored" data-anchor-id="select-default-model-features-no-timestamps-no-category-mix-by-default"><span class="header-section-number">4.3</span> Select default model features (no timestamps, no category mix by default)</h3>
 <p>We train clustering on behaviour (volume, duration, recency, timing). Category mix stays available for interpretation and later sensitivity checks.</p>
-<div id="2d74d4d8" class="cell" data-execution_count="32">
+<div id="5717f8e1" class="cell" data-execution_count="32">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>MODEL_FEATURES <span class="op">=</span> (</span>
@@ -2345,7 +2345,7 @@ Distance-based clustering is scale-sensitive. <strong>RobustScaler uses median a
 </section>
 <section id="diagnostics-before-preprocessing-missingness-inf-safety" class="level3" data-number="4.4">
 <h3 data-number="4.4" class="anchored" data-anchor-id="diagnostics-before-preprocessing-missingness-inf-safety"><span class="header-section-number">4.4</span> Diagnostics before preprocessing (missingness + inf safety)</h3>
-<div id="28fb828f" class="cell" data-execution_count="33">
+<div id="27596831" class="cell" data-execution_count="33">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Missingness inspection (future-proof if new features introduce NaNs)</span></span>
@@ -2353,7 +2353,7 @@ Distance-based clustering is scale-sensitive. <strong>RobustScaler uses median a
 <span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>miss_table <span class="op">=</span> miss[miss <span class="op">&gt;</span> <span class="dv">0</span>].to_frame(<span class="st">"n_missing"</span>)</span>
 <span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>miss_table</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="102">
+<div class="cell-output cell-output-display" data-execution_count="33">
 <div>
 
 
@@ -2371,7 +2371,7 @@ Distance-based clustering is scale-sensitive. <strong>RobustScaler uses median a
 </div>
 </div>
 </div>
-<div id="93708356" class="cell" data-execution_count="34">
+<div id="3c593675" class="cell" data-execution_count="34">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Inf / -Inf inspection (must not exist)</span></span>
@@ -2393,7 +2393,7 @@ Distance-based clustering is scale-sensitive. <strong>RobustScaler uses median a
 <li>clip each feature to <strong>p01–p99</strong> in raw units (winsorization),</li>
 <li>then apply RobustScaler.</li>
 </ul>
-<div id="f404b12b" class="cell" data-execution_count="35">
+<div id="3f38c451" class="cell" data-execution_count="35">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># A) Drop truly constant columns only (no information)</span></span>
@@ -2423,7 +2423,7 @@ Distance-based clustering is scale-sensitive. <strong>RobustScaler uses median a
 <div class="cell-output cell-output-stdout">
 <pre><code>Truly-constant cols (drop): []</code></pre>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="104">
+<div class="cell-output cell-output-display" data-execution_count="35">
 <pre><code>((2091, 20),
                  feature       p01         p99
  0  calls_per_active_day  1.000000    5.000000
@@ -2442,7 +2442,7 @@ Distance-based clustering is scale-sensitive. <strong>RobustScaler uses median a
 </section>
 <section id="median-imputation-robustscaler" class="level3" data-number="4.6">
 <h3 data-number="4.6" class="anchored" data-anchor-id="median-imputation-robustscaler"><span class="header-section-number">4.6</span> Median imputation + RobustScaler</h3>
-<div id="3abd7c9d" class="cell" data-execution_count="36">
+<div id="4c7aabe3" class="cell" data-execution_count="36">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Median imputation is robust (and future-proof for features that may introduce NaNs later)</span></span>
@@ -2471,7 +2471,7 @@ max_abs_after_scaling = 95.09999999999991</code></pre>
 <section id="diagnostics-identify-any-dominating-feature-in-scaled-space" class="level3" data-number="4.7">
 <h3 data-number="4.7" class="anchored" data-anchor-id="diagnostics-identify-any-dominating-feature-in-scaled-space"><span class="header-section-number">4.7</span> Diagnostics: identify any dominating feature in scaled space</h3>
 <p>If one feature still dominates distances, we detect it explicitly.</p>
-<div id="1777d847" class="cell" data-execution_count="37">
+<div id="6cb5c08b" class="cell" data-execution_count="37">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>feature_names <span class="op">=</span> <span class="bu">list</span>(X_clip.columns)</span>
@@ -2492,7 +2492,7 @@ max_abs_after_scaling = 95.09999999999991</code></pre>
 <span id="cb42-16"><a href="#cb42-16" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb42-17"><a href="#cb42-17" aria-hidden="true" tabindex="-1"></a>dominance.head(<span class="dv">12</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="106">
+<div class="cell-output cell-output-display" data-execution_count="37">
 <div>
 
 
@@ -2627,7 +2627,7 @@ max_abs_after_scaling = 95.09999999999991</code></pre>
 </section>
 <section id="preprocess-audit-compact-decision-useful" class="level3" data-number="4.8">
 <h3 data-number="4.8" class="anchored" data-anchor-id="preprocess-audit-compact-decision-useful"><span class="header-section-number">4.8</span> Preprocess audit (compact, decision-useful)</h3>
-<div id="5ff7466e" class="cell" data-execution_count="38">
+<div id="dc8f0490" class="cell" data-execution_count="38">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>preprocess_audit <span class="op">=</span> pd.DataFrame({</span>
@@ -2644,7 +2644,7 @@ max_abs_after_scaling = 95.09999999999991</code></pre>
 <span id="cb43-12"><a href="#cb43-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb43-13"><a href="#cb43-13" aria-hidden="true" tabindex="-1"></a>preprocess_audit</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="107">
+<div class="cell-output cell-output-display" data-execution_count="38">
 <div>
 
 
@@ -2686,7 +2686,7 @@ max_abs_after_scaling = 95.09999999999991</code></pre>
 </section>
 <section id="store-preprocessing-artifacts-in-memory-safe-by-default" class="level3" data-number="4.9">
 <h3 data-number="4.9" class="anchored" data-anchor-id="store-preprocessing-artifacts-in-memory-safe-by-default"><span class="header-section-number">4.9</span> Store preprocessing artifacts (in-memory, safe by default)</h3>
-<div id="7cab6330" class="cell" data-execution_count="39">
+<div id="b8ed0d2d" class="cell" data-execution_count="39">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>prep <span class="op">=</span> {</span>
@@ -2708,7 +2708,7 @@ max_abs_after_scaling = 95.09999999999991</code></pre>
 <span id="cb44-17"><a href="#cb44-17" aria-hidden="true" tabindex="-1"></a>raw_summary <span class="op">=</span> raw_summary[[<span class="st">"count"</span>, <span class="st">"mean"</span>, <span class="st">"std"</span>, <span class="st">"min"</span>, <span class="st">"50%"</span>, <span class="st">"90%"</span>, <span class="st">"95%"</span>, <span class="st">"99%"</span>, <span class="st">"max"</span>]]</span>
 <span id="cb44-18"><a href="#cb44-18" aria-hidden="true" tabindex="-1"></a>raw_summary.head(<span class="dv">12</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="108">
+<div class="cell-output cell-output-display" data-execution_count="39">
 <div>
 
 
@@ -2884,7 +2884,7 @@ max_abs_after_scaling = 95.09999999999991</code></pre>
 <h3 data-number="4.10" class="anchored" data-anchor-id="a-final-numeric-stability-guardrail"><span class="header-section-number">4.10</span> A Final numeric stability guardrail</h3>
 <p>Even after robust scaling, distance-based clustering can still be dominated by a small number of extreme points.<br>
 To make the pipeline <strong>bullet-proof</strong>, we apply a final cap in standardized space so no single feature can overwhelm Euclidean distances.</p>
-<div id="14330246" class="cell" data-execution_count="40">
+<div id="fb0e027e" class="cell" data-execution_count="40">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Final stability cap in scaled space (portfolio-grade guardrail)</span></span>
@@ -2904,7 +2904,7 @@ To make the pipeline <strong>bullet-proof</strong>, we apply a final cap in stan
 <span id="cb45-15"><a href="#cb45-15" aria-hidden="true" tabindex="-1"></a>prep[<span class="st">"X"</span>] <span class="op">=</span> X_capped</span>
 <span id="cb45-16"><a href="#cb45-16" aria-hidden="true" tabindex="-1"></a>cap_audit</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="109">
+<div class="cell-output cell-output-display" data-execution_count="40">
 <div>
 
 
@@ -2973,7 +2973,7 @@ This ensures the <span class="math inline">\(K\)</span> decision reflects behavi
 <hr>
 <section id="compute-k-search-metrics" class="level3" data-number="5.1">
 <h3 data-number="5.1" class="anchored" data-anchor-id="compute-k-search-metrics"><span class="header-section-number">5.1</span> Compute <span class="math inline">\(K\)</span>-search metrics</h3>
-<div id="8a36705b" class="cell" data-execution_count="41">
+<div id="2c25da32" class="cell" data-execution_count="41">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.cluster <span class="im">import</span> KMeans</span>
@@ -3012,7 +3012,7 @@ This ensures the <span class="math inline">\(K\)</span> decision reflects behavi
 <span id="cb46-34"><a href="#cb46-34" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb46-35"><a href="#cb46-35" aria-hidden="true" tabindex="-1"></a>k_metrics</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="110">
+<div class="cell-output cell-output-display" data-execution_count="41">
 <div>
 
 
@@ -3138,7 +3138,7 @@ This ensures the <span class="math inline">\(K\)</span> decision reflects behavi
 </section>
 <section id="visualize-metrics-elbow-quality-trade-offs" class="level3" data-number="5.2">
 <h3 data-number="5.2" class="anchored" data-anchor-id="visualize-metrics-elbow-quality-trade-offs"><span class="header-section-number">5.2</span> Visualize metrics (elbow + quality trade-offs)</h3>
-<div id="8f029a69" class="cell" data-execution_count="42">
+<div id="9b727c59" class="cell" data-execution_count="42">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -3171,7 +3171,7 @@ This ensures the <span class="math inline">\(K\)</span> decision reflects behavi
 <li>among the <strong>lowest Davies–Bouldin</strong> scores,</li>
 <li>and not far beyond the elbow (where inertia gains flatten).</li>
 </ul>
-<div id="e51e64af" class="cell" data-execution_count="43">
+<div id="c4d2add5" class="cell" data-execution_count="43">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ----------------------------------------</span></span>
@@ -3208,7 +3208,7 @@ This ensures the <span class="math inline">\(K\)</span> decision reflects behavi
 <span id="cb47-32"><a href="#cb47-32" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb47-33"><a href="#cb47-33" aria-hidden="true" tabindex="-1"></a>shortlist</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="112">
+<div class="cell-output cell-output-display" data-execution_count="43">
 <div>
 
 
@@ -3393,7 +3393,7 @@ For interpretation, we summarise clusters back in <strong>business units</strong
 <hr>
 <section id="fit-k-means-k4-and-store-labels" class="level3" data-number="6.1">
 <h3 data-number="6.1" class="anchored" data-anchor-id="fit-k-means-k4-and-store-labels"><span class="header-section-number">6.1</span> Fit K-means (<span class="math inline">\(K=4\)</span>) and store labels</h3>
-<div id="0eb5d220" class="cell" data-execution_count="44">
+<div id="a624d1c8" class="cell" data-execution_count="44">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.cluster <span class="im">import</span> KMeans</span>
@@ -3421,7 +3421,7 @@ For interpretation, we summarise clusters back in <strong>business units</strong
 <span id="cb48-23"><a href="#cb48-23" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb48-24"><a href="#cb48-24" aria-hidden="true" tabindex="-1"></a>cluster_sizes</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="113">
+<div class="cell-output cell-output-display" data-execution_count="44">
 <div>
 
 
@@ -3463,7 +3463,7 @@ For interpretation, we summarise clusters back in <strong>business units</strong
 </section>
 <section id="join-clusters-back-to-contact-level-table-raw-units" class="level3" data-number="6.2">
 <h3 data-number="6.2" class="anchored" data-anchor-id="join-clusters-back-to-contact-level-table-raw-units"><span class="header-section-number">6.2</span> Join clusters back to contact-level table (raw units)</h3>
-<div id="5cbdf9f3" class="cell" data-execution_count="45">
+<div id="e69f8ad1" class="cell" data-execution_count="45">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>contact_labeled <span class="op">=</span> contact_features_view.merge(contact_clusters, on<span class="op">=</span><span class="st">"contact_id"</span>, how<span class="op">=</span><span class="st">"left"</span>)</span>
@@ -3473,7 +3473,7 @@ For interpretation, we summarise clusters back in <strong>business units</strong
 <span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>contact_labeled[[<span class="st">"contact_id"</span>, <span class="st">"cluster"</span>]].head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="114">
+<div class="cell-output cell-output-display" data-execution_count="45">
 <div>
 
 
@@ -3522,7 +3522,7 @@ For interpretation, we summarise clusters back in <strong>business units</strong
 <section id="cluster-cards-robust-medians-size" class="level3" data-number="6.3">
 <h3 data-number="6.3" class="anchored" data-anchor-id="cluster-cards-robust-medians-size"><span class="header-section-number">6.3</span> Cluster “cards” (robust medians + size)</h3>
 <p>These cards are stakeholder-ready: <strong>one row per cluster</strong>, using <strong>medians</strong> (robust to heavy tails).</p>
-<div id="1b0a82ed" class="cell" data-execution_count="46">
+<div id="fb357421" class="cell" data-execution_count="46">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>card_features <span class="op">=</span> [</span>
@@ -3554,7 +3554,7 @@ For interpretation, we summarise clusters back in <strong>business units</strong
 <span id="cb50-27"><a href="#cb50-27" aria-hidden="true" tabindex="-1"></a>cards <span class="op">=</span> cards[[<span class="st">"cluster"</span>, <span class="st">"n_contacts"</span>] <span class="op">+</span> card_features]</span>
 <span id="cb50-28"><a href="#cb50-28" aria-hidden="true" tabindex="-1"></a>cards.T</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="115">
+<div class="cell-output cell-output-display" data-execution_count="46">
 <div>
 
 
@@ -3692,7 +3692,7 @@ For interpretation, we summarise clusters back in <strong>business units</strong
 <section id="within-cluster-spread-check-to-avoid-misleading-medians" class="level3" data-number="6.4">
 <h3 data-number="6.4" class="anchored" data-anchor-id="within-cluster-spread-check-to-avoid-misleading-medians"><span class="header-section-number">6.4</span> Within-cluster spread check (to avoid misleading medians)</h3>
 <p>We report 25/50/75% for a few “anchor” variables.</p>
-<div id="38689f47" class="cell" data-execution_count="47">
+<div id="7afe04e8" class="cell" data-execution_count="47">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>spread_features <span class="op">=</span> [<span class="st">"n_calls"</span>, <span class="st">"total_dur_sec"</span>, <span class="st">"recency_days"</span>, <span class="st">"median_dur_sec"</span>]</span>
@@ -3709,7 +3709,7 @@ For interpretation, we summarise clusters back in <strong>business units</strong
 <span id="cb51-12"><a href="#cb51-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb51-13"><a href="#cb51-13" aria-hidden="true" tabindex="-1"></a>spread.T</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="116">
+<div class="cell-output cell-output-display" data-execution_count="47">
 <div>
 
 
@@ -3839,7 +3839,7 @@ For interpretation, we summarise clusters back in <strong>business units</strong
 </section>
 <section id="timing-patterns-mean-shares-with-any-non-business-hours-sunday-activity" class="level3" data-number="6.5">
 <h3 data-number="6.5" class="anchored" data-anchor-id="timing-patterns-mean-shares-with-any-non-business-hours-sunday-activity"><span class="header-section-number">6.5</span> Timing patterns (mean shares + % with any non-business-hours / Sunday activity)</h3>
-<div id="02b064bb" class="cell" data-execution_count="48">
+<div id="1e5e7e66" class="cell" data-execution_count="48">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>share_cols <span class="op">=</span> [</span>
@@ -3880,7 +3880,7 @@ For interpretation, we summarise clusters back in <strong>business units</strong
 <span id="cb52-36"><a href="#cb52-36" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb52-37"><a href="#cb52-37" aria-hidden="true" tabindex="-1"></a>timing_summary.T</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="117">
+<div class="cell-output cell-output-display" data-execution_count="48">
 <div>
 
 
@@ -3990,7 +3990,7 @@ For interpretation, we summarise clusters back in <strong>business units</strong
 <section id="segment-names-action-policy-stakeholder-ready-layer" class="level3" data-number="6.6">
 <h3 data-number="6.6" class="anchored" data-anchor-id="segment-names-action-policy-stakeholder-ready-layer"><span class="header-section-number">6.6</span> Segment names + action policy (stakeholder-ready layer)</h3>
 <p>Cluster IDs are arbitrary. We map clusters to segment labels using <strong>behavioural signatures</strong> from <code>cards</code>.</p>
-<div id="044ff743" class="cell" data-execution_count="49">
+<div id="6d44519d" class="cell" data-execution_count="49">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> cards[[</span>
@@ -4039,7 +4039,7 @@ For interpretation, we summarise clusters back in <strong>business units</strong
 <span id="cb53-44"><a href="#cb53-44" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb53-45"><a href="#cb53-45" aria-hidden="true" tabindex="-1"></a>cluster_labels</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="118">
+<div class="cell-output cell-output-display" data-execution_count="49">
 <div>
 
 
@@ -4093,7 +4093,7 @@ For interpretation, we summarise clusters back in <strong>business units</strong
 <section id="cluster-narrative-auto-generated-from-the-cards" class="level3" data-number="6.7">
 <h3 data-number="6.7" class="anchored" data-anchor-id="cluster-narrative-auto-generated-from-the-cards"><span class="header-section-number">6.7</span> Cluster narrative (auto-generated from the cards)</h3>
 <p>Short and operational: “what it looks like” + “what to do”.</p>
-<div id="73dc432e" class="cell" data-execution_count="50">
+<div id="582dbef8" class="cell" data-execution_count="50">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> fmt(x, nd<span class="op">=</span><span class="dv">1</span>):</span>
@@ -4129,7 +4129,7 @@ For interpretation, we summarise clusters back in <strong>business units</strong
 <span id="cb54-31"><a href="#cb54-31" aria-hidden="true" tabindex="-1"></a>cluster_story <span class="op">=</span> pd.DataFrame(narr_rows).sort_values(<span class="st">"cluster"</span>).reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb54-32"><a href="#cb54-32" aria-hidden="true" tabindex="-1"></a>cluster_story</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="119">
+<div class="cell-output cell-output-display" data-execution_count="50">
 <div>
 
 
@@ -4188,7 +4188,7 @@ For interpretation, we summarise clusters back in <strong>business units</strong
 <section id="what-decisions-can-the-business-make-with-these-segments" class="level3" data-number="6.8">
 <h3 data-number="6.8" class="anchored" data-anchor-id="what-decisions-can-the-business-make-with-these-segments"><span class="header-section-number">6.8</span> “What decisions can the business make with these segments?”</h3>
 <p>Policy rules we can implement in a CRM without exposing identifiers.</p>
-<div id="6682be0b" class="cell" data-execution_count="51">
+<div id="214f2624" class="cell" data-execution_count="51">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>rules <span class="op">=</span> pd.DataFrame([</span>
@@ -4220,7 +4220,7 @@ For interpretation, we summarise clusters back in <strong>business units</strong
 <span id="cb55-27"><a href="#cb55-27" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb55-28"><a href="#cb55-28" aria-hidden="true" tabindex="-1"></a>rules</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="120">
+<div class="cell-output cell-output-display" data-execution_count="51">
 <div>
 
 
@@ -4273,7 +4273,7 @@ For interpretation, we summarise clusters back in <strong>business units</strong
 </section>
 <section id="store-artifacts-for-later-phases-robustness-sensitivity-pca" class="level3" data-number="6.9">
 <h3 data-number="6.9" class="anchored" data-anchor-id="store-artifacts-for-later-phases-robustness-sensitivity-pca"><span class="header-section-number">6.9</span> Store artifacts for later phases (robustness, sensitivity, PCA)</h3>
-<div id="211e5595" class="cell" data-execution_count="52">
+<div id="55397a98" class="cell" data-execution_count="52">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb56"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>prep[<span class="st">"K_FINAL"</span>] <span class="op">=</span> K_FINAL</span>
@@ -4292,7 +4292,7 @@ For interpretation, we summarise clusters back in <strong>business units</strong
 <span id="cb56-14"><a href="#cb56-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb56-15"><a href="#cb56-15" aria-hidden="true" tabindex="-1"></a><span class="bu">list</span>(prep.keys())[:<span class="dv">15</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="121">
+<div class="cell-output cell-output-display" data-execution_count="52">
 <pre><code>['MODEL_FEATURES',
  'FEATURE_BLOCKS',
  'feature_names',
@@ -4348,7 +4348,7 @@ For interpretation, we summarise clusters back in <strong>business units</strong
 <section id="seed-stability-test-ari-across-many-random-seeds" class="level3" data-number="7.2">
 <h3 data-number="7.2" class="anchored" data-anchor-id="seed-stability-test-ari-across-many-random-seeds"><span class="header-section-number">7.2</span> Seed stability test (ARI across many random seeds)</h3>
 <p>We run K-means many times with different <code>random_state</code>, always using <span class="math inline">\(K = 4\)</span>, and compare each run to a baseline labeling.</p>
-<div id="9e3472a2" class="cell" data-execution_count="53">
+<div id="25804043" class="cell" data-execution_count="53">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb58"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -4400,7 +4400,7 @@ For interpretation, we summarise clusters back in <strong>business units</strong
 <span id="cb58-47"><a href="#cb58-47" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb58-48"><a href="#cb58-48" aria-hidden="true" tabindex="-1"></a>seed_audit, seed_stability.head(<span class="dv">10</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="122">
+<div class="cell-output cell-output-display" data-execution_count="53">
 <pre><code>(   K_FINAL  n_seeds_tested  ari_min  ari_p05  ari_median  ari_p95  ari_max
  0        4              50      1.0      1.0         1.0      1.0      1.0,
     seed  ari_vs_baseline       inertia
@@ -4440,7 +4440,7 @@ For interpretation, we summarise clusters back in <strong>business units</strong
 <section id="worst-case-rerun-inspection-label-aligned" class="level3" data-number="7.3">
 <h3 data-number="7.3" class="anchored" data-anchor-id="worst-case-rerun-inspection-label-aligned"><span class="header-section-number">7.3</span> “Worst-case” rerun inspection (label-aligned)</h3>
 <p>Even when ARI is <span class="math inline">\(1.0\)</span>, K-means can output the same partition with different numeric labels (label permutation). So we align labels before comparing cluster sizes.</p>
-<div id="da046dd3" class="cell" data-execution_count="54">
+<div id="778ebb04" class="cell" data-execution_count="54">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb60"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Identify worst seed run (lowest ARI vs baseline)</span></span>
@@ -4478,7 +4478,7 @@ For interpretation, we summarise clusters back in <strong>business units</strong
 <span id="cb60-33"><a href="#cb60-33" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb60-34"><a href="#cb60-34" aria-hidden="true" tabindex="-1"></a>worst_seed, <span class="bu">float</span>(worst[<span class="st">"ari_vs_baseline"</span>]), ari_worst, mapping, size_compare.reset_index()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="123">
+<div class="cell-output cell-output-display" data-execution_count="54">
 <pre><code>(0,
  1.0,
  1.0,
@@ -4515,7 +4515,7 @@ For interpretation, we summarise clusters back in <strong>business units</strong
 <p>Cluster labels are arbitrary (cluster 0 in one run is not “the same” as cluster 0 in another). ARI is invariant to label permutation, so it compares structure, not label IDs.</p>
 </div>
 </div>
-<div id="a5f30fb7" class="cell" data-execution_count="55">
+<div id="53b26c43" class="cell" data-execution_count="55">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb62"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.impute <span class="im">import</span> SimpleImputer</span>
@@ -4597,7 +4597,7 @@ For interpretation, we summarise clusters back in <strong>business units</strong
 <span id="cb62-77"><a href="#cb62-77" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb62-78"><a href="#cb62-78" aria-hidden="true" tabindex="-1"></a>block_sensitivity</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="124">
+<div class="cell-output cell-output-display" data-execution_count="55">
 <div>
 
 
@@ -4645,7 +4645,7 @@ For interpretation, we summarise clusters back in <strong>business units</strong
 </section>
 <section id="sensitivity-summary-decision-useful" class="level3" data-number="7.5">
 <h3 data-number="7.5" class="anchored" data-anchor-id="sensitivity-summary-decision-useful"><span class="header-section-number">7.5</span> Sensitivity summary (decision-useful)</h3>
-<div id="a93b68d0" class="cell" data-execution_count="56">
+<div id="2907be51" class="cell" data-execution_count="56">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb63"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>sens_audit <span class="op">=</span> pd.DataFrame({</span>
@@ -4659,7 +4659,7 @@ For interpretation, we summarise clusters back in <strong>business units</strong
 <span id="cb63-9"><a href="#cb63-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb63-10"><a href="#cb63-10" aria-hidden="true" tabindex="-1"></a>sens_audit.T</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="125">
+<div class="cell-output cell-output-display" data-execution_count="56">
 <div>
 
 
@@ -4722,7 +4722,7 @@ For interpretation, we summarise clusters back in <strong>business units</strong
 </section>
 <section id="store-robustness-artifacts-for-later-reporting" class="level3" data-number="7.6">
 <h3 data-number="7.6" class="anchored" data-anchor-id="store-robustness-artifacts-for-later-reporting"><span class="header-section-number">7.6</span> Store robustness artifacts (for later reporting)</h3>
-<div id="60773154" class="cell" data-execution_count="57">
+<div id="b2f19ccc" class="cell" data-execution_count="57">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb64"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>prep[<span class="st">"seed_stability"</span>] <span class="op">=</span> seed_stability</span>
@@ -4738,7 +4738,7 @@ For interpretation, we summarise clusters back in <strong>business units</strong
 <span id="cb64-11"><a href="#cb64-11" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb64-12"><a href="#cb64-12" aria-hidden="true" tabindex="-1"></a><span class="bu">list</span>(prep.keys())[:<span class="dv">25</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="126">
+<div class="cell-output cell-output-display" data-execution_count="57">
 <pre><code>['MODEL_FEATURES',
  'FEATURE_BLOCKS',
  'feature_names',
@@ -4835,7 +4835,7 @@ We use PCA only to create a 2D “map” of contacts for storytelling, sanity-ch
 <hr>
 <section id="fit-pca-2-components-on-the-clustering-matrix" class="level3" data-number="8.1">
 <h3 data-number="8.1" class="anchored" data-anchor-id="fit-pca-2-components-on-the-clustering-matrix"><span class="header-section-number">8.1</span> Fit PCA (<span class="math inline">\(2\)</span> components) on the clustering matrix</h3>
-<div id="d4f653fd" class="cell" data-execution_count="58">
+<div id="cab6847d" class="cell" data-execution_count="58">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb66"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -4859,7 +4859,7 @@ We use PCA only to create a 2D “map” of contacts for storytelling, sanity-ch
 <span id="cb66-19"><a href="#cb66-19" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb66-20"><a href="#cb66-20" aria-hidden="true" tabindex="-1"></a>pca_audit</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="127">
+<div class="cell-output cell-output-display" data-execution_count="58">
 <div>
 
 
@@ -4891,7 +4891,7 @@ We use PCA only to create a 2D “map” of contacts for storytelling, sanity-ch
 </section>
 <section id="build-a-plotting-table-hashed-id-pca-coordinates-cluster" class="level3" data-number="8.2">
 <h3 data-number="8.2" class="anchored" data-anchor-id="build-a-plotting-table-hashed-id-pca-coordinates-cluster"><span class="header-section-number">8.2</span> Build a plotting table (hashed id + PCA coordinates + cluster)</h3>
-<div id="3bddff62" class="cell" data-execution_count="59">
+<div id="93b64198" class="cell" data-execution_count="59">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb67"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>pca_view <span class="op">=</span> pd.DataFrame({</span>
@@ -4903,7 +4903,7 @@ We use PCA only to create a 2D “map” of contacts for storytelling, sanity-ch
 <span id="cb67-7"><a href="#cb67-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb67-8"><a href="#cb67-8" aria-hidden="true" tabindex="-1"></a>pca_view.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="128">
+<div class="cell-output cell-output-display" data-execution_count="59">
 <div>
 
 
@@ -4963,7 +4963,7 @@ We use PCA only to create a 2D “map” of contacts for storytelling, sanity-ch
 </section>
 <section id="pca-scatter-plot-clusters-on-the-2d-map" class="level3" data-number="8.3">
 <h3 data-number="8.3" class="anchored" data-anchor-id="pca-scatter-plot-clusters-on-the-2d-map"><span class="header-section-number">8.3</span> PCA scatter plot (clusters on the 2D map)</h3>
-<div id="fbba3da2" class="cell" data-execution_count="60">
+<div id="e66c64a8" class="cell" data-execution_count="60">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb68"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">6</span>))</span>
@@ -4992,7 +4992,7 @@ We use PCA only to create a 2D “map” of contacts for storytelling, sanity-ch
 <section id="optional-cluster-centroids-projected-into-pca-space" class="level3" data-number="8.4">
 <h3 data-number="8.4" class="anchored" data-anchor-id="optional-cluster-centroids-projected-into-pca-space"><span class="header-section-number">8.4</span> Optional: cluster centroids projected into PCA space</h3>
 <p>This helps stakeholders see “where the centers sit” on the map.</p>
-<div id="94fb0a47" class="cell" data-execution_count="61">
+<div id="b18540dc" class="cell" data-execution_count="61">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb69"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="co"># K-means centroids exist in scaled feature space; PCA was fit on the same space.</span></span>
@@ -5007,7 +5007,7 @@ We use PCA only to create a 2D “map” of contacts for storytelling, sanity-ch
 <span id="cb69-10"><a href="#cb69-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb69-11"><a href="#cb69-11" aria-hidden="true" tabindex="-1"></a>cent</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="130">
+<div class="cell-output cell-output-display" data-execution_count="61">
 <div>
 
 
@@ -5051,7 +5051,7 @@ We use PCA only to create a 2D “map” of contacts for storytelling, sanity-ch
 </div>
 </div>
 </div>
-<div id="5cf0dc17" class="cell" data-execution_count="62">
+<div id="df11585b" class="cell" data-execution_count="62">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb70"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">6</span>))</span>
@@ -5105,7 +5105,7 @@ Note
 </section>
 <section id="store-pca-artifacts-for-the-final-report" class="level3" data-number="8.6">
 <h3 data-number="8.6" class="anchored" data-anchor-id="store-pca-artifacts-for-the-final-report"><span class="header-section-number">8.6</span> Store PCA artifacts (for the final report)</h3>
-<div id="d7597e17" class="cell" data-execution_count="63">
+<div id="cc30533d" class="cell" data-execution_count="63">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb71"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>prep[<span class="st">"pca_model"</span>] <span class="op">=</span> pca</span>
@@ -5115,7 +5115,7 @@ Note
 <span id="cb71-5"><a href="#cb71-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb71-6"><a href="#cb71-6" aria-hidden="true" tabindex="-1"></a><span class="bu">list</span>(prep.keys())[:<span class="dv">30</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="132">
+<div class="cell-output cell-output-display" data-execution_count="63">
 <pre><code>['MODEL_FEATURES',
  'FEATURE_BLOCKS',
  'feature_names',
@@ -5209,7 +5209,7 @@ Note
 <hr>
 <section id="assemble-the-final-segment-table-labels-key-medians" class="level3" data-number="10.1">
 <h3 data-number="10.1" class="anchored" data-anchor-id="assemble-the-final-segment-table-labels-key-medians"><span class="header-section-number">10.1</span> Assemble the “final segment table” (labels + key medians)</h3>
-<div id="c78bbbf3" class="cell" data-execution_count="64">
+<div id="1b692db6" class="cell" data-execution_count="64">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb73"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
@@ -5238,7 +5238,7 @@ Note
 <span id="cb73-24"><a href="#cb73-24" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb73-25"><a href="#cb73-25" aria-hidden="true" tabindex="-1"></a>final_segments</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="133">
+<div class="cell-output cell-output-display" data-execution_count="64">
 <div>
 
 
@@ -5361,12 +5361,12 @@ Note
 </section>
 <section id="decision-rules-crm-outreach-policy" class="level3" data-number="10.2">
 <h3 data-number="10.2" class="anchored" data-anchor-id="decision-rules-crm-outreach-policy"><span class="header-section-number">10.2</span> Decision rules (CRM / outreach policy)</h3>
-<div id="869856a6" class="cell" data-execution_count="65">
+<div id="bffa8481" class="cell" data-execution_count="65">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb74"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>rules</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="134">
+<div class="cell-output cell-output-display" data-execution_count="65">
 <div>
 
 
@@ -5419,7 +5419,7 @@ Note
 </section>
 <section id="executive-summary-one-screen" class="level3" data-number="10.3">
 <h3 data-number="10.3" class="anchored" data-anchor-id="executive-summary-one-screen"><span class="header-section-number">10.3</span> “Executive summary” (one screen)</h3>
-<div id="cba978ac" class="cell" data-execution_count="66">
+<div id="d73c68af" class="cell" data-execution_count="66">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb75"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a>sens_audit <span class="op">=</span> prep[<span class="st">"sens_audit"</span>].copy()</span>
@@ -5446,7 +5446,7 @@ Note
 <span id="cb75-22"><a href="#cb75-22" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb75-23"><a href="#cb75-23" aria-hidden="true" tabindex="-1"></a>exec_summary</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="135">
+<div class="cell-output cell-output-display" data-execution_count="66">
 <div>
 
 
@@ -5482,7 +5482,7 @@ Note
 </section>
 <section id="findings-plain-english-decision-first" class="level3" data-number="10.4">
 <h3 data-number="10.4" class="anchored" data-anchor-id="findings-plain-english-decision-first"><span class="header-section-number">10.4</span> Findings (plain-English, decision-first)</h3>
-<div id="2532c6e9" class="cell" data-execution_count="67">
+<div id="7f58d9c0" class="cell" data-execution_count="67">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb76"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert the segment table into a short narrative summary</span></span>
@@ -5491,7 +5491,7 @@ Note
 <span id="cb76-4"><a href="#cb76-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb76-5"><a href="#cb76-5" aria-hidden="true" tabindex="-1"></a>seg_counts</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="136">
+<div class="cell-output cell-output-display" data-execution_count="67">
 <div>
 
 
@@ -5535,7 +5535,7 @@ Note
 </div>
 </div>
 </div>
-<div id="74ad8848" class="cell" data-execution_count="68">
+<div id="d03a9bfb" class="cell" data-execution_count="68">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb77"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Build a compact “what it is + what to do” list (no IDs)</span></span>
@@ -5552,7 +5552,7 @@ Note
 <span id="cb77-12"><a href="#cb77-12" aria-hidden="true" tabindex="-1"></a>findings_table <span class="op">=</span> pd.DataFrame(rows).sort_values(<span class="st">"n_contacts"</span>, ascending<span class="op">=</span><span class="va">False</span>).reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb77-13"><a href="#cb77-13" aria-hidden="true" tabindex="-1"></a>findings_table</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="137">
+<div class="cell-output cell-output-display" data-execution_count="68">
 <div>
 
 
@@ -5643,7 +5643,7 @@ Note
 </section>
 <section id="optional-export-portfolio-artifacts-off-by-default" class="level3" data-number="10.6">
 <h3 data-number="10.6" class="anchored" data-anchor-id="optional-export-portfolio-artifacts-off-by-default"><span class="header-section-number">10.6</span> Optional: export portfolio artifacts (OFF by default)</h3>
-<div id="82aa87be" class="cell" data-execution_count="69">
+<div id="44a62150" class="cell" data-execution_count="69">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb78"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a>SAVE_FILES <span class="op">=</span> <span class="va">False</span>  <span class="co"># keep False unless you explicitly want exports</span></span>
@@ -5666,8 +5666,8 @@ Note
 <hr>
 </section>
 </section>
-<section id="phase-10-final-wrap-up-competition-framing-decision-narrative" class="level2" data-number="11">
-<h2 data-number="11" class="anchored" data-anchor-id="phase-10-final-wrap-up-competition-framing-decision-narrative"><span class="header-section-number">11</span> Phase 10 — Final wrap-up (competition framing + decision narrative)</h2>
+<section id="phase-9-final-wrap-up-competition-framing-decision-narrative" class="level2" data-number="11">
+<h2 data-number="11" class="anchored" data-anchor-id="phase-9-final-wrap-up-competition-framing-decision-narrative"><span class="header-section-number">11</span> Phase 9 — Final wrap-up (competition framing + decision narrative)</h2>
 <section id="competition-prompt-what-we-were-given" class="level3" data-number="11.1">
 <h3 data-number="11.1" class="anchored" data-anchor-id="competition-prompt-what-we-were-given"><span class="header-section-number">11.1</span> Competition prompt (what we were given)</h3>
 <p><strong>We were given</strong> a historical phone-call behaviour dataset where each record represents a call event.<br>
