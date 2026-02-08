@@ -29,8 +29,9 @@ Segment contacts into **actionable behavioral groups** to support **outreach pla
 
 ::: callout-tip
 ### Workflow (phases)
-Phase 1 Audit → Phase 2 Contact-level features → Phase 3 Preprocess → Phase 4 Choose K → Phase 5 Fit/Interpret → then stability/ARI → sensitivity (feature blocks) → PCA viz → final recommendations.
+Phase 1 Audit → Phase 2 Contact-level features → Phase 3 Preprocess → Phase 4 Choose K → Phase 5 Fit & interpret → Phase 6 Robustness (ARI stability + feature-block sensitivity) → Phase 7 PCA visualization (interpretation only) → Phase 8 Final deliverables → Phase 9 Final wrap-up (competition framing + decision narrative).
 :::
+
 
 ## Phase 1 — Audit (call-level)
 
@@ -2232,7 +2233,8 @@ else:
 ---
 
 
-## Phase 10 — Final wrap-up (competition framing + decision narrative)
+## Phase 9 — Final wrap-up (competition framing + decision narrative)
+
 
 ### Competition prompt (what we were given)
 
