@@ -1,0 +1,5 @@
+segment_label,n_contacts,share_pct,default_action
+One-off / low-engagement contacts,1599,76.47,Deprioritize by default; automate nurture; reactivate only if new activity appears
+Warm occasional contacts,225,10.76,Nurture cadence (monthly/quarterly); structured check-ins to increase engagement
+Core active relationships,176,8.42,Retention + priority servicing; assign owner; proactive follow-ups
+Rare deep conversations,91,4.35,High-touch when active; preserve context; personalized re-engagement when dormant
