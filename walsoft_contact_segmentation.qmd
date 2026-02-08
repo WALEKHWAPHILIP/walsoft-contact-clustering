@@ -1,0 +1,2349 @@
+---
+title: "Walsoft Decision-driven contact segmentation"
+format: html
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+## Business objective
+
+Segment contacts into **actionable behavioral groups** to support **outreach planning, CRM prioritization, and relationship management**.
+
+::: callout-important
+### Hard constraints enforced in this project
+
+**Time bands (exact):**
+
+- `business_hours`: 08:00–17:59  
+- `evening`: 18:00–20:59  
+- `late_night`: 21:00–23:59  
+- `early_morning`: 00:00–07:59  
+
+**Working days:**
+
+- Open days: Monday–Saturday  
+- Closed day: Sunday only
+:::
+
+::: callout-tip
+### Workflow (phases)
+Phase 1 Audit → Phase 2 Contact-level features → Phase 3 Preprocess → Phase 4 Choose K → Phase 5 Fit/Interpret → then stability/ARI → sensitivity (feature blocks) → PCA viz → final recommendations.
+:::
+
+## Phase 1 — Audit (call-level)
+
+### Setup (imports + toggles)
+
+```{python}
+#| echo: false
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import hashlib
+from collections import OrderedDict
+
+# -----------------------
+# GitHub safety toggles
+# -----------------------
+SAVE_FILES = False  # keep OFF by default
+
+DATA_URL = (
+    "https://learn.walsoftcomputers.com/machine_learning/walsoft_phonecall/"
+    "original_dataset_with_instructions/walsoft_semi_categorized_phone_dataset.csv"
+)
+
+pd.set_option("display.max_columns", 200)
+pd.set_option("display.width", 140)
+
+# -----------------------
+# Hard constraints (exact)
+# -----------------------
+TIME_BANDS = {
+    "business_hours": (8, 17),   # 08:00–17:59
+    "evening":        (18, 20),  # 18:00–20:59
+    "late_night":     (21, 23),  # 21:00–23:59
+    "early_morning":  (0, 7),    # 00:00–07:59
+}
+
+OPEN_DOW = set([0, 1, 2, 3, 4, 5])  # Mon..Sat
+CLOSED_DOW = set([6])              # Sun
+```
+
+### Load the dataset
+
+
+#### Load data
+
+```{python}
+# Load dataset (no assumptions, no output)
+df = pd.read_csv(DATA_URL)
+```
+
+#### Dataset overview
+
+```{python}
+# Dataset overview (executive-level structural metrics)
+
+dataset_overview = pd.DataFrame({
+    "Metric": [
+        "Rows",
+        "Columns",
+        "Total cells",
+        "Memory usage (MB)"
+    ],
+    "Value": [
+        int(df.shape[0]),
+        int(df.shape[1]),
+        int(df.shape[0] * df.shape[1]),
+        f"{df.memory_usage(deep=True).sum() / 1e6:.2f}"
+    ]
+})
+
+dataset_overview
+```
+
+#### Column inventory (schema inspection)
+
+```{python}
+# Column inventory (schema audit table)
+
+column_inventory = (
+    pd.DataFrame({
+        "Column name": df.columns,
+        "Data type": df.dtypes.astype(str),
+        "Non-null count": df.notna().sum().values,
+        "Non-null rate": (df.notna().mean()).round(3).values
+    })
+    .sort_values("Column name")
+    .reset_index(drop=True)
+)
+
+column_inventory
+```
+
+#### Sample records (visual sanity check)
+
+```{python}
+# Sample records (human sanity check only)
+df.head(3)
+```
+
+
+
+---
+
+### Identify key columns (robust, from the data itself)
+
+```{python}
+# Identify key columns (schema audit, no assumptions)
+
+
+# ------------------------------------------------------------------
+# Normalise column names once (single source of truth)
+# ------------------------------------------------------------------
+col_map = {c: c.lower().strip() for c in df.columns}
+
+# ------------------------------------------------------------------
+# Detection rules (explicit, auditable, extensible)
+# ------------------------------------------------------------------
+DETECTION_RULES = OrderedDict({
+    "Date": {
+        "description": "Calendar date component",
+        "match_any": ["date"]
+    },
+    "Time": {
+        "description": "Clock time component",
+        "match_exact_or_contains": ["time"]
+    },
+    "Duration": {
+        "description": "Call duration (numeric, any unit)",
+        "match_any": ["duration", "seconds", "secs", "sec", "minutes", "mins"]
+    },
+    "Identifier": {
+        "description": "Contact or phone identifier",
+        "match_any": ["dialled", "dialed", "phone", "number", "contact"]
+    },
+    "Category": {
+        "description": "Human or system call classification",
+        "match_any": ["category"]
+    }
+})
+
+# ------------------------------------------------------------------
+# Apply detection rules
+# ------------------------------------------------------------------
+records = []
+
+for field, rule in DETECTION_RULES.items():
+    detected = []
+
+    for col, lc in col_map.items():
+        if "match_exact_or_contains" in rule:
+            if any(lc == k or k in lc for k in rule["match_exact_or_contains"]):
+                detected.append(col)
+        elif "match_any" in rule:
+            if any(k in lc for k in rule["match_any"]):
+                detected.append(col)
+
+    records.append({
+        "Field type": field,
+        "Purpose": rule["description"],
+        "Detected columns": ", ".join(detected) if detected else "—",
+        "Count": len(detected),
+        "Status": "OK" if detected else "Missing"
+    })
+
+# ------------------------------------------------------------------
+# Canonical schema audit table (Quarto renders automatically)
+# ------------------------------------------------------------------
+schema_audit = pd.DataFrame(records)
+
+schema_audit
+```
+
+### Build canonical timestamp and numeric duration (audit-quality checks)
+
+
+#### Validate required schema
+
+```{python}
+# Validate required columns exist (hard audit gate)
+
+required_cols = [
+    "date_stamp",
+    "time",
+    "duration_in_seconds",
+    "dialled_phone_number"
+]
+
+missing_required = [c for c in required_cols if c not in df.columns]
+
+schema_validation = pd.DataFrame({
+    "Required column": required_cols,
+    "Present in dataset": [c in df.columns for c in required_cols]
+})
+
+schema_validation
+```
+
+```{python}
+# Stop execution if schema is invalid
+assert len(missing_required) == 0, f"Missing required columns: {missing_required}"
+```
+
+---
+
+#### Build canonical fields
+
+```{python}
+# Canonical timestamp
+df["call_ts"] = pd.to_datetime(
+    df["date_stamp"].astype(str).str.strip() + " " +
+    df["time"].astype(str).str.strip(),
+    errors="coerce"
+)
+
+# Canonical duration (seconds)
+df["dur_sec"] = pd.to_numeric(
+    df["duration_in_seconds"],
+    errors="coerce"
+)
+```
+
+---
+
+#### Data integrity audit
+
+```{python}
+bad_ts = int(df["call_ts"].isna().sum())
+bad_dur = int(df["dur_sec"].isna().sum())
+negative_dur = int((df["dur_sec"] < 0).sum())
+
+timestamp_min = df["call_ts"].min()
+timestamp_max = df["call_ts"].max()
+
+integrity_audit = pd.DataFrame({
+    "Check": [
+        "Timestamp parse failures",
+        "Duration numeric failures",
+        "Negative durations",
+        "Timestamp range (min)",
+        "Timestamp range (max)",
+        "Timestamp success rate",
+        "Duration success rate"
+    ],
+    "Value": [
+        bad_ts,
+        bad_dur,
+        negative_dur,
+        str(timestamp_min),
+        str(timestamp_max),
+        f"{df['call_ts'].notna().mean():.3f}",
+        f"{df['dur_sec'].notna().mean():.3f}"
+    ]
+})
+
+integrity_audit
+```
+
+---
+
+#### Hard integrity gates
+
+```{python}
+assert bad_ts == 0, "Timestamp parsing failed for some rows."
+assert bad_dur == 0, "Duration numeric conversion failed for some rows."
+assert negative_dur == 0, "Negative durations detected."
+```
+
+
+
+### Hash a stable `contact_id` (do not export raw identifiers)
+
+```{python}
+def stable_contact_id(x: int | str) -> str:
+    s = str(x).encode("utf-8")
+    return hashlib.sha256(s).hexdigest()[:12]
+
+df["contact_id"] = df["dialled_phone_number"].map(stable_contact_id)
+
+print("Unique contacts (hashed):", int(df["contact_id"].nunique()))
+assert df["contact_id"].isna().sum() == 0
+```
+
+### Derive time-band + open/closed-day flags (hard constraints)
+
+```{python}
+df["hour"] = df["call_ts"].dt.hour
+df["dow"] = df["call_ts"].dt.dayofweek  # Mon=0..Sun=6
+
+def assign_time_band(hour: int) -> str:
+    if TIME_BANDS["early_morning"][0] <= hour <= TIME_BANDS["early_morning"][1]:
+        return "early_morning"
+    if TIME_BANDS["business_hours"][0] <= hour <= TIME_BANDS["business_hours"][1]:
+        return "business_hours"
+    if TIME_BANDS["evening"][0] <= hour <= TIME_BANDS["evening"][1]:
+        return "evening"
+    if TIME_BANDS["late_night"][0] <= hour <= TIME_BANDS["late_night"][1]:
+        return "late_night"
+    raise ValueError(f"Hour out of range: {hour}")
+
+df["time_band"] = df["hour"].map(assign_time_band)
+
+df["is_open_day"] = df["dow"].isin(OPEN_DOW).astype(int)
+df["is_closed_day"] = df["dow"].isin(CLOSED_DOW).astype(int)
+
+# sanity checks: mutually exclusive and exhaustive
+assert set(df["time_band"].unique()) == {"early_morning", "business_hours", "evening", "late_night"}
+assert int((df["is_open_day"] + df["is_closed_day"]).min()) == 1
+assert int((df["is_open_day"] + df["is_closed_day"]).max()) == 1
+
+df[["call_ts","hour","dow","time_band","is_open_day","is_closed_day"]].head(5)
+```
+
+### Executive summary table (stakeholder-ready)
+
+```{python}
+cat_col = "category" if "category" in df.columns else None
+
+summary = pd.DataFrame({
+    "Metric": [
+        "Rows (calls)",
+        "Columns",
+        "Unique contacts (hashed)",
+        "Timestamp parsable rate",
+        "Timestamp range (min)",
+        "Timestamp range (max)",
+        "Duration numeric rate",
+        "Duplicate rows",
+        "Category column present?",
+        "Category non-null rate (if present)",
+        "Data readiness score (ts & dur)"
+    ],
+    "Value": [
+        int(df.shape[0]),
+        int(df.shape[1]),
+        int(df["contact_id"].nunique()),
+        f"{df['call_ts'].notna().mean():.3f}",
+        str(df["call_ts"].min()),
+        str(df["call_ts"].max()),
+        f"{df['dur_sec'].notna().mean():.3f}",
+        int(df.duplicated().sum()),
+        bool(cat_col is not None),
+        f"{df[cat_col].notna().mean():.3f}" if cat_col else "N/A",
+        f"{(df['call_ts'].notna() & df['dur_sec'].notna()).mean():.3f}",
+    ]
+})
+summary
+```
+
+### Visual 1 — Monthly call volume (coverage)
+
+```{python}
+#| echo: false
+monthly = (
+    df.assign(month_id=lambda x: x["call_ts"].dt.to_period("M").astype(str))
+      .groupby("month_id")
+      .size()
+      .reset_index(name="n_calls")
+)
+
+plt.figure()
+plt.plot(monthly["month_id"], monthly["n_calls"])
+plt.xticks(rotation=90)
+plt.title("Monthly call volume (data coverage)")
+plt.xlabel("Month")
+plt.ylabel("Number of calls")
+plt.tight_layout()
+plt.show()
+
+monthly.tail(12)
+```
+
+### Visual 2 — Duration distribution (outlier awareness)
+
+```{python}
+#| echo: false
+plt.figure()
+plt.hist(df["dur_sec"], bins=60)
+plt.title("Call duration distribution (seconds)")
+plt.xlabel("Duration (seconds)")
+plt.ylabel("Count")
+plt.tight_layout()
+plt.show()
+
+plt.figure()
+plt.boxplot(df["dur_sec"], vert=True)
+plt.title("Call duration boxplot (seconds)")
+plt.ylabel("Duration (seconds)")
+plt.tight_layout()
+plt.show()
+
+df["dur_sec"].quantile([0, 0.25, 0.5, 0.75, 0.9, 0.95, 0.99, 1.0]).to_frame("duration_seconds")
+```
+
+### Visual 3 — Time-band mix + open/closed-day mix (hard-constraint diagnostics)
+
+```{python}
+#| echo: false
+band_counts = df["time_band"].value_counts().sort_index()
+day_counts = df["is_closed_day"].map({0: "Open day (Mon–Sat)", 1: "Closed day (Sun)"}).value_counts()
+
+plt.figure()
+plt.bar(band_counts.index.astype(str), band_counts.values)
+plt.title("Calls by time band (hard constraints)")
+plt.xlabel("Time band")
+plt.ylabel("Number of calls")
+plt.tight_layout()
+plt.show()
+
+plt.figure()
+plt.bar(day_counts.index.astype(str), day_counts.values)
+plt.title("Calls on open vs closed days (hard constraint)")
+plt.xlabel("Day type")
+plt.ylabel("Number of calls")
+plt.tight_layout()
+plt.show()
+
+band_counts.to_frame("n_calls"), day_counts.to_frame("n_calls")
+```
+
+---
+
+
+::: callout-note
+## Phase 1 — Audit summary (stakeholder-ready)
+
+**Dataset health (ready for segmentation):**
+
+- **24,952 call records** across **2,091 unique contacts** (hashed).
+- **Time coverage:** 2022-01-01 → 2024-10-04 (timestamps parse perfectly; durations fully numeric).
+- **No duplicates** detected; **category is fully populated**.
+- **Data readiness score = 1.000** (timestamp + duration fully usable).
+
+**Behavioral signals visible already:**
+
+- Calls concentrate in **business hours** (20,624 / 24,952 ≈ 82.7%).
+- Smaller but meaningful activity in **evening** (2,877 ≈ 11.5%) and **early morning** (1,071 ≈ 4.3%); **late night** is rare (380 ≈ 1.5%).
+- Most calls happen on **open days (Mon–Sat)** (23,300 ≈ 93.4%); **Sunday** exists but is limited (1,652 ≈ 6.6%).
+
+**Duration profile (important for feature design):**
+
+- Typical call is short: median **34s**, 75th percentile **84s**.
+- Heavy tail: 99th percentile **~1,274s**, max **7,200s** (2 hours) → we will use **robust statistics** (median, IQR, log transforms, and long-call share) instead of relying only on means.
+
+**Coverage caution (modeling hygiene):**
+
+- Monthly volume is broadly stable until mid-2024, then shows sharp drops in some late months.
+- We will treat this as **coverage/behavior regime change** and rely on **contact-level aggregates + recency** (not month-level trends) for clustering.
+
+### Transition to Phase 2
+Next, we convert the call-level table into a **contact-level feature table** (1 row per contact).  
+This is the modeling dataset for clustering.
+:::
+
+---
+
+## Phase 2 — Contact-level features
+
+This phase transforms the **call-level dataset** into a **contact-level feature table**, producing **one row per contact**. These features capture activity intensity, temporal patterns, and category distributions, forming the basis for clustering and behavioral segmentation.
+
+---
+
+### Guardrails & Setup
+
+We first ensure all required columns from Phase 1 exist. This prevents accidental execution on incomplete data.
+
+```{python}
+# Guardrails: ensure critical columns exist
+assert "contact_id" in df.columns, "contact_id missing (run Phase 1 first)."
+assert "call_ts" in df.columns, "call_ts missing (run Phase 1 first)."
+assert "dur_sec" in df.columns, "dur_sec missing (run Phase 1 first)."
+assert "time_band" in df.columns, "time_band missing (run Phase 1 first)."
+assert "is_open_day" in df.columns and "is_closed_day" in df.columns, "open/closed flags missing."
+```
+
+Helper for safe division (avoids division by zero):
+
+```{python}
+def safe_div(a, b):
+    return np.where(b == 0, 0.0, a / b)
+```
+
+Reference timestamp for recency calculations:
+
+```{python}
+ASOF_TS = df["call_ts"].max()
+```
+
+---
+
+### Base Aggregations
+
+Compute **core contact-level metrics**: total calls, active days, duration statistics, and recency/tenure measures.
+
+```{python}
+g = df.groupby("contact_id", as_index=False)
+
+base = g.agg(
+    n_calls=("call_ts", "size"),
+    n_days_active=("call_ts", lambda x: x.dt.date.nunique()),
+    first_call_ts=("call_ts", "min"),
+    last_call_ts=("call_ts", "max"),
+    total_dur_sec=("dur_sec", "sum"),
+    mean_dur_sec=("dur_sec", "mean"),
+    median_dur_sec=("dur_sec", "median"),
+    p90_dur_sec=("dur_sec", lambda x: x.quantile(0.90)),
+)
+
+# Recency and tenure (days)
+base["recency_days"] = (ASOF_TS - base["last_call_ts"]).dt.total_seconds() / (24 * 3600)
+base["tenure_days"] = (base["last_call_ts"] - base["first_call_ts"]).dt.total_seconds() / (24 * 3600)
+
+# Call rates
+base["calls_per_active_day"] = safe_div(base["n_calls"], base["n_days_active"])
+base["calls_per_tenure_day"] = safe_div(base["n_calls"], (base["tenure_days"] + 1.0))
+
+# Log transforms to stabilize heavy-tailed distributions
+base["log_n_calls"] = np.log1p(base["n_calls"])
+base["log_total_dur"] = np.log1p(base["total_dur_sec"])
+base["log_median_dur"] = np.log1p(base["median_dur_sec"])
+```
+
+---
+
+### Long-call Share
+
+Define **long calls** as those exceeding the 95th percentile. Compute each contact's share of long calls to capture **tail behavior**.
+
+```{python}
+LONG_CALL_THRESHOLD = float(df["dur_sec"].quantile(0.95))
+df["_is_long_call"] = (df["dur_sec"] >= LONG_CALL_THRESHOLD).astype(int)
+
+long_share = (
+    df.groupby("contact_id", as_index=False)
+      .agg(long_call_share=("_is_long_call", "mean"))
+)
+```
+
+---
+
+### Time-Band Mix
+
+Contacts may have different temporal activity patterns. We compute **proportions of calls per time band** (business hours, evening, late night, early morning).
+
+```{python}
+band_mix = (
+    pd.crosstab(df["contact_id"], df["time_band"], normalize="index")
+      .reset_index()
+      .rename(columns={
+          "business_hours": "share_business_hours",
+          "evening": "share_evening",
+          "late_night": "share_late_night",
+          "early_morning": "share_early_morning",
+      })
+)
+
+# Ensure all expected columns exist
+for col in ["share_business_hours","share_evening","share_late_night","share_early_morning"]:
+    if col not in band_mix.columns:
+        band_mix[col] = 0.0
+```
+
+---
+
+### Open vs Closed Day Mix
+
+Capture **day-of-week activity patterns**. Open vs. closed days are mutually exclusive and sum to 1 per contact.
+
+```{python}
+day_mix = (
+    df.groupby("contact_id", as_index=False)
+      .agg(
+          share_open_day=("is_open_day", "mean"),
+          share_closed_day=("is_closed_day", "mean")
+      )
+)
+
+# Sanity check
+day_mix["_sum"] = day_mix["share_open_day"] + day_mix["share_closed_day"]
+assert np.allclose(day_mix["_sum"], 1.0, atol=1e-9), "Open+Closed shares not summing to 1."
+day_mix = day_mix.drop(columns=["_sum"])
+```
+
+---
+
+### Category Mix (Optional)
+
+For interpretation, compute the **top-K category proportions per contact**, preserving sparsity and numeric representation.
+
+```{python}
+TOPK = 8
+top_categories = df["category"].value_counts().head(TOPK).index.tolist()
+
+cat_tab = (
+    pd.crosstab(df["contact_id"], df["category"])
+      .reindex(columns=top_categories, fill_value=0)
+)
+
+# Convert to proportions
+cat_mix = (cat_tab.div(cat_tab.sum(axis=1).replace(0, 1), axis=0)
+                 .reset_index()
+                 .rename(columns={c: f"share_cat_{c}" for c in top_categories}))
+```
+
+---
+
+### Merge All Features
+
+Combine **base, long-call, time-band, day-mix, and category features** into a single contact-level table.
+
+```{python}
+contact_features = (
+    base.merge(long_share, on="contact_id", how="left")
+        .merge(band_mix, on="contact_id", how="left")
+        .merge(day_mix, on="contact_id", how="left")
+        .merge(cat_mix, on="contact_id", how="left")
+)
+
+# Fill any leftover NaNs
+num_cols = contact_features.select_dtypes(include=[np.number]).columns
+contact_features[num_cols] = contact_features[num_cols].fillna(0.0)
+
+# Preview
+print("contact_features.shape =", contact_features.shape)
+print("Long-call threshold (95th pct, seconds) =", LONG_CALL_THRESHOLD)
+
+contact_features.head(5).T
+```
+
+---
+
+### Quick Feature Audit
+
+Sanity check **feature completeness and distribution**.
+
+```{python}
+feature_audit = pd.DataFrame({
+    "n_contacts": [int(contact_features.shape[0])],
+    "n_features_total": [int(contact_features.shape[1])],
+    "any_missing_numeric": [bool(contact_features.select_dtypes(include=[np.number]).isna().any().any())],
+    "min_calls": [int(contact_features["n_calls"].min())],
+    "median_calls": [float(contact_features["n_calls"].median())],
+    "max_calls": [int(contact_features["n_calls"].max())],
+    "median_recency_days": [float(contact_features["recency_days"].median())],
+})
+feature_audit
+```
+
+---
+
+### Top Activity Contacts
+
+Inspect **most active contacts** without exposing raw identifiers. This helps validate engineered features and distribution of behavioral metrics.
+
+```{python}
+top_activity = contact_features.sort_values("n_calls", ascending=False).head(10)[
+    ["contact_id","n_calls","n_days_active","total_dur_sec","median_dur_sec","recency_days",
+     "share_business_hours","share_evening","share_early_morning","share_late_night",
+     "share_open_day","share_closed_day","long_call_share"]
+]
+top_activity.T
+```
+
+---
+
+::: callout-note
+## Phase 2 — Stakeholder-ready summary (what we learned)
+
+We successfully converted **24,952 calls** into a **contact-level modeling table** with **2,091 contacts** and **28 features**.
+
+### What the Phase 2 feature table represents (business meaning)
+Each row is a **contact** (hashed ID), and the features capture:
+
+- **Volume / intensity:** `n_calls`, `n_days_active`, `calls_per_active_day`, `calls_per_tenure_day`
+- **Relationship depth / effort proxy:** `total_dur_sec`, `median_dur_sec`, `p90_dur_sec`, plus log versions
+- **Recency / dormancy risk:** `recency_days` (how long since last call)
+- **Time preference / accessibility:** shares by time band (business/evening/early/late)
+- **Open vs closed day behavior:** `share_open_day`, `share_closed_day`
+- **Tail behavior:** `long_call_share` where “long” is **≥ 396s** (95th percentile)
+- **Category mix (interpretation aid):** proportions of top-8 categories per contact
+
+### Sanity checks passed (safe to proceed)
+- No missing numeric values in engineered features.
+- Open + closed day shares sum to 1 per contact (validated).
+- Time-band shares exist for every contact (columns ensured even if 0).
+
+### What the results already hint at (without clustering yet)
+- **Highly skewed activity:** median contact has **2 calls**, but the top contact has **2,413** calls → we must **scale/transform** before K-means.
+- **Recency is large for many contacts:** median `recency_days ≈ 445` → many contacts are dormant; segmentation must separate “active” vs “inactive”.
+- Top activity contacts show diverse patterns:
+  - some are high-volume but mostly business hours
+  - some show meaningful evening/early activity
+  - some have high `long_call_share` (deep conversations or issue resolution)
+
+### Modeling implication
+
+At this point we have a **contact-level feature table** with strong business meaning (volume, duration, recency, timing).  
+Before clustering, we must build a **clean clustering matrix** $X$ so distance-based algorithms behave correctly.
+
+We will build $X$ such that it:
+
+1) **Excludes non-model columns**  
+   - No timestamps (`first_call_ts`, `last_call_ts`) and no raw identifiers.  
+   - Category mix is kept for interpretation, but excluded from default training to avoid “baking in labels”.
+
+2) **Controls heavy tails and near-constant features**  
+   - Phone-call behavior is highly skewed (a few contacts dominate calls/duration).  
+   - We apply robust transforms already engineered (log features) and use a *robust preprocessing pipeline*.  
+   - We also drop **near-constant (IQR≈0) features** to avoid unstable scaling and distance domination.
+
+3) **Scales fairly for distance-based clustering**  
+   - We use **median imputation** (robust, future-proof if new features introduce missingness).  
+   - We use **RobustScaler (median/IQR)** instead of StandardScaler to reduce outlier influence.
+
+---
+
+### Transition
+
+Phase 3 converts `contact_features` into **clustering-ready inputs** and produces:
+
+- a **feature-block dictionary** for later sensitivity tests (volume vs duration vs timing vs recency),
+- a cleaned, scaled matrix **`X`** and aligned **`feature_names`** for reproducibility and interpretation.
+:::
+
+---
+
+
+## Phase 3 — Preprocess (bullet-proof, distance-based clustering ready)
+
+This phase prepares the **contact-level feature table** for distance-based clustering by producing a stable numeric matrix **`X`** (rows = contacts, columns = standardized features).
+
+We do four things:
+
+1) **Define feature blocks** (auditable and reusable for sensitivity tests later)  
+2) **Build the default model matrix** (exclude timestamps and category mix by default)  
+3) **Stabilize heavy tails** (clip extreme values in raw space)  
+4) **Impute + robust-scale** (median imputation + RobustScaler) with diagnostics
+
+::: callout-tip
+### Why RobustScaler (not StandardScaler)
+Contact behaviour is heavy-tailed (a few contacts dominate activity).  
+Distance-based clustering is scale-sensitive. **RobustScaler uses median and IQR**, reducing outlier influence and producing more stable distances.
+:::
+
+---
+
+### Freeze an interpretation copy (read-only view)
+
+```{python}
+contact_features_view = contact_features.copy()
+```
+
+---
+
+### Define feature blocks (for interpretation and sensitivity analysis)
+
+```{python}
+import numpy as np
+import pandas as pd
+
+from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import RobustScaler
+```
+
+```{python}
+# -----------------------------
+# Feature blocks (business meaning)
+# -----------------------------
+volume_features = [
+    "n_calls", "n_days_active", "calls_per_active_day", "calls_per_tenure_day", "log_n_calls"
+]
+
+duration_features = [
+    "total_dur_sec", "mean_dur_sec", "median_dur_sec", "p90_dur_sec",
+    "log_total_dur", "log_median_dur", "long_call_share"
+]
+
+recency_features = [
+    "recency_days", "tenure_days"
+]
+
+timing_features = [
+    "share_business_hours", "share_evening", "share_early_morning", "share_late_night",
+    "share_open_day", "share_closed_day"
+]
+
+# Category mix is useful for interpretation, but excluded from default model training
+category_features = [c for c in contact_features.columns if c.startswith("share_cat_")]
+
+FEATURE_BLOCKS = {
+    "volume": volume_features,
+    "duration": duration_features,
+    "recency": recency_features,
+    "timing": timing_features,
+    "category": category_features
+}
+
+# Validate engineered feature presence (hard gate)
+missing = {k: [f for f in v if f not in contact_features.columns] for k, v in FEATURE_BLOCKS.items()}
+missing = {k: v for k, v in missing.items() if len(v) > 0}
+assert len(missing) == 0, f"Missing engineered features: {missing}"
+
+FEATURE_BLOCKS
+```
+
+---
+
+### Select default model features (no timestamps, no category mix by default)
+
+We train clustering on behaviour (volume, duration, recency, timing).
+Category mix stays available for interpretation and later sensitivity checks.
+
+```{python}
+MODEL_FEATURES = (
+    FEATURE_BLOCKS["volume"]
+    + FEATURE_BLOCKS["duration"]
+    + FEATURE_BLOCKS["recency"]
+    + FEATURE_BLOCKS["timing"]
+)
+
+X_raw = contact_features[MODEL_FEATURES].copy()
+print("X_raw.shape =", X_raw.shape)
+```
+
+---
+
+### Diagnostics before preprocessing (missingness + inf safety)
+
+```{python}
+# Missingness inspection (future-proof if new features introduce NaNs)
+miss = X_raw.isna().sum().sort_values(ascending=False)
+miss_table = miss[miss > 0].to_frame("n_missing")
+miss_table
+```
+
+```{python}
+# Inf / -Inf inspection (must not exist)
+has_inf = np.isinf(X_raw.to_numpy(dtype=float)).any()
+print("Any inf in X_raw:", bool(has_inf))
+assert not has_inf, "Infinite values detected in X_raw (must fix before scaling)."
+```
+
+---
+
+### Stability strategy (recommended): drop only truly constant columns + clip extremes
+
+**Important correction:**
+Dropping “low IQR” features is too aggressive in contact data (many contacts have 1–2 calls, which makes shares look constant).
+Instead we:
+
+* drop only **truly constant** columns (no information),
+* clip each feature to **p01–p99** in raw units (winsorization),
+* then apply RobustScaler.
+
+```{python}
+# A) Drop truly constant columns only (no information)
+nunique = X_raw.nunique(dropna=False)
+constant_cols = nunique[nunique <= 1].index.tolist()
+print("Truly-constant cols (drop):", constant_cols)
+
+X_raw2 = X_raw.drop(columns=constant_cols) if constant_cols else X_raw.copy()
+
+# B) Clip extremes in RAW space to stabilize heavy tails
+CLIP_LO = 0.01
+CLIP_HI = 0.99
+
+clip_info = []
+X_clip = X_raw2.copy()
+
+for col in X_clip.columns:
+    lo = float(X_clip[col].quantile(CLIP_LO))
+    hi = float(X_clip[col].quantile(CLIP_HI))
+    X_clip[col] = X_clip[col].clip(lower=lo, upper=hi)
+    clip_info.append({"feature": col, "p01": lo, "p99": hi})
+
+clip_table = pd.DataFrame(clip_info).sort_values("feature").reset_index(drop=True)
+
+X_clip.shape, clip_table.head(10)
+```
+
+---
+
+### Median imputation + RobustScaler
+
+```{python}
+# Median imputation is robust (and future-proof for features that may introduce NaNs later)
+imputer = SimpleImputer(strategy="median")
+
+# RobustScaler uses median/IQR to reduce outlier influence
+scaler = RobustScaler(with_centering=True, with_scaling=True, quantile_range=(25.0, 75.0))
+
+X_imputed = imputer.fit_transform(X_clip)
+X = scaler.fit_transform(X_imputed)
+
+print("X.shape =", X.shape)
+print("Any NaN in X:", bool(np.isnan(X).any()))
+assert not np.isnan(X).any(), "NaNs remain after preprocessing (must fix)."
+
+print("max_abs_after_scaling =", float(np.max(np.abs(X))))
+```
+
+---
+
+### Diagnostics: identify any dominating feature in scaled space
+
+If one feature still dominates distances, we detect it explicitly.
+
+```{python}
+feature_names = list(X_clip.columns)
+max_abs_by_feature = np.max(np.abs(X), axis=0)
+
+dominance = (
+    pd.DataFrame({
+        "feature": feature_names,
+        "max_abs_scaled": max_abs_by_feature,
+        "raw_p01": clip_table.set_index("feature").loc[feature_names, "p01"].values,
+        "raw_p99": clip_table.set_index("feature").loc[feature_names, "p99"].values,
+        "raw_iqr": (X_raw2.quantile(0.75) - X_raw2.quantile(0.25)).reindex(feature_names).values,
+        "n_unique": X_raw2.nunique().reindex(feature_names).values
+    })
+    .sort_values("max_abs_scaled", ascending=False)
+    .reset_index(drop=True)
+)
+
+dominance.head(12)
+```
+
+---
+
+### Preprocess audit (compact, decision-useful)
+
+```{python}
+preprocess_audit = pd.DataFrame({
+    "n_contacts": [int(X.shape[0])],
+    "n_model_features": [int(X.shape[1])],
+    "n_constant_dropped": [int(len(constant_cols))],
+    "constant_dropped": [", ".join(constant_cols) if constant_cols else "None"],
+    "clip_low_quantile": [CLIP_LO],
+    "clip_high_quantile": [CLIP_HI],
+    "n_features_with_missing_before": [int((X_raw.isna().sum() > 0).sum())],
+    "total_missing_cells_before": [int(X_raw.isna().sum().sum())],
+    "max_abs_after_scaling": [float(np.max(np.abs(X)))],
+})
+
+preprocess_audit
+```
+
+---
+
+### Store preprocessing artifacts (in-memory, safe by default)
+
+```{python}
+prep = {
+    "MODEL_FEATURES": MODEL_FEATURES,
+    "FEATURE_BLOCKS": FEATURE_BLOCKS,
+    "feature_names": feature_names,
+    "imputer": imputer,
+    "scaler": scaler,
+    "X_raw": X_raw2,      # before clipping (audit)
+    "X_clip": X_clip,     # clipped raw matrix (audit)
+    "X": X,               # final clustering matrix
+    "clip_table": clip_table,
+    "dominance": dominance,
+    "preprocess_audit": preprocess_audit
+}
+
+# Raw-unit summary (post-clip = what the scaler actually sees)
+raw_summary = X_clip.describe(percentiles=[0.5, 0.9, 0.95, 0.99]).T
+raw_summary = raw_summary[["count", "mean", "std", "min", "50%", "90%", "95%", "99%", "max"]]
+raw_summary.head(12)
+```
+
+
+
+---
+
+
+### A Final numeric stability guardrail
+
+Even after robust scaling, distance-based clustering can still be dominated by a small number of extreme points.  
+To make the pipeline **bullet-proof**, we apply a final cap in standardized space so no single feature can overwhelm Euclidean distances.
+
+```{python}
+# Final stability cap in scaled space (portfolio-grade guardrail)
+SCALED_CAP = 10.0
+
+X_uncapped = prep["X"]
+X_capped = np.clip(X_uncapped, -SCALED_CAP, SCALED_CAP)
+
+cap_audit = pd.DataFrame({
+    "scaled_cap": [SCALED_CAP],
+    "max_abs_before": [float(np.max(np.abs(X_uncapped)))],
+    "max_abs_after": [float(np.max(np.abs(X_capped)))],
+})
+
+# Update the matrix used downstream (keep uncapped for audit)
+prep["X_uncapped"] = X_uncapped
+prep["X"] = X_capped
+cap_audit
+```
+
+---
+
+
+::: callout-note
+## Phase 3 — Sign-off (ready for K-selection)
+
+We produced a stable clustering matrix `prep["X"]` for **2,091 contacts × 20 features**.
+
+**Robustness guarantees:**
+- No missing values or infinities
+- Heavy tails controlled by **p01–p99 clipping**
+- Distance stability guaranteed by **post-scaling cap** (max absolute value ≤ 10)
+
+**Next:** Phase 4 chooses the number of clusters $K$ using a multi-metric selection protocol (inertia, silhouette, Davies–Bouldin) on `prep["X"]`.
+:::
+
+
+
+## Phase 4 — Choose $K$ (model selection for clustering)
+
+Choosing $K$ is a **model selection** problem: different values of $K$ define different segmentations.
+We evaluate candidate $K$ values using three complementary criteria:
+
+- **Inertia (SSE)**: decreases with $K$; we look for an “elbow” (diminishing returns).
+- **Silhouette**: higher is better; measures separation vs cohesion.
+- **Davies–Bouldin**: lower is better; penalizes overlapping clusters.
+
+::: callout-important
+We compute metrics on the **preprocessed matrix** `prep["X"]` (robust-scaled and capped).  
+This ensures the $K$ decision reflects behavioural structure rather than raw-unit dominance.
+:::
+
+---
+
+### Compute $K$-search metrics
+
+```{python}
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score, davies_bouldin_score
+
+X = prep["X"]  # capped, clustering-ready matrix
+
+# Candidate K range (employer-ready default)
+K_MIN, K_MAX = 2, 12
+
+rows = []
+for k in range(K_MIN, K_MAX + 1):
+    km = KMeans(
+        n_clusters=k,
+        n_init=50,         # more restarts = more reliable
+        random_state=42
+    )
+    labels = km.fit_predict(X)
+
+    inertia = float(km.inertia_)
+    sil = float(silhouette_score(X, labels))
+    db = float(davies_bouldin_score(X, labels))
+
+    rows.append({
+        "k": k,
+        "inertia": inertia,
+        "silhouette": sil,
+        "davies_bouldin": db
+    })
+
+k_metrics = pd.DataFrame(rows)
+
+# Add a simple "elbow help": marginal gain in inertia
+k_metrics["inertia_drop"] = k_metrics["inertia"].shift(1) - k_metrics["inertia"]
+k_metrics["inertia_drop_pct"] = (k_metrics["inertia_drop"] / k_metrics["inertia"].shift(1)) * 100
+
+k_metrics
+```
+
+---
+
+### Visualize metrics (elbow + quality trade-offs)
+
+```{python}
+#| echo: false
+import matplotlib.pyplot as plt
+
+plt.figure()
+plt.plot(k_metrics["k"], k_metrics["inertia"], marker="o")
+plt.title("Elbow plot: inertia vs K")
+plt.xlabel("K")
+plt.ylabel("Inertia (SSE)")
+plt.tight_layout()
+plt.show()
+
+plt.figure()
+plt.plot(k_metrics["k"], k_metrics["silhouette"], marker="o")
+plt.title("Silhouette vs K (higher is better)")
+plt.xlabel("K")
+plt.ylabel("Silhouette")
+plt.tight_layout()
+plt.show()
+
+plt.figure()
+plt.plot(k_metrics["k"], k_metrics["davies_bouldin"], marker="o")
+plt.title("Davies–Bouldin vs K (lower is better)")
+plt.xlabel("K")
+plt.ylabel("Davies–Bouldin")
+plt.tight_layout()
+plt.show()
+```
+
+---
+
+### Candidate shortlist (data-driven)
+
+We shortlist $K$ values that are plausible trade-offs:
+
+* among the **top silhouette** scores,
+* among the **lowest Davies–Bouldin** scores,
+* and not far beyond the elbow (where inertia gains flatten).
+
+
+```{python}
+# ----------------------------------------
+# Candidate shortlist — modern, auditable
+# ----------------------------------------
+
+# Identify top-K by each metric
+top_sil = k_metrics.nlargest(5, "silhouette").copy()
+top_sil["reason"] = "top_silhouette"
+
+low_db = k_metrics.nsmallest(5, "davies_bouldin").copy()
+low_db["reason"] = "low_davies_bouldin"
+
+# Combine and mark duplicates
+shortlist = pd.concat([top_sil, low_db]).reset_index(drop=True)
+
+# If a K appears in both, update reason
+shortlist = (
+    shortlist.groupby("k", as_index=False)
+    .agg({
+        "silhouette": "first",
+        "davies_bouldin": "first",
+        "inertia": "first",
+        "reason": lambda x: " & ".join(sorted(set(x)))
+    })
+    .sort_values("k")
+    .reset_index(drop=True)
+)
+
+# Round metrics for readability
+shortlist[["silhouette", "davies_bouldin", "inertia"]] = shortlist[
+    ["silhouette", "davies_bouldin", "inertia"]
+].round(4)
+
+shortlist
+
+```
+
+
+---
+
+
+
+### What the metrics say (from first principles)
+
+#### Inertia (elbow)
+Huge drops from **K=2 → 3** (~27%) and **3 → 4** (~30%).  
+After **K=4**, the drop collapses to ~12% and then <~11% thereafter.  
+That’s a classic **elbow at K≈4**.
+
+#### Silhouette (separation vs cohesion)
+- **K=2:** 0.651 (very strong)  
+- **K=3:** 0.646 (very strong)  
+- **K=4:** 0.589 (still strong)  
+
+Then it falls sharply (e.g., **K=5** = 0.483 and continues down).  
+Structure is strongest for small K, especially **2–4**.
+
+#### Davies–Bouldin (overlap; lower is better)
+- Best is **K=2** (0.747), then **K=4** (0.772), then **K=3** (0.829).  
+After that, the metric worsens notably.
+
+---
+
+### Decision
+Choose **K=4** (recommended).  
+
+- **K=2:** too coarse for actionability (“low vs high activity”)  
+- **K=3:** better but still merges distinct behaviours (“steady frequent” vs “bursty intense”)  
+- **K=4:** lands at the elbow, with strong silhouette & Davies–Bouldin — best balance of interpretability, actionability, and metric support.
+
+::: callout-important
+## Decision: choose $K=4$
+
+We select **$K=4$** as the operational segmentation because it balances:
+
+- **Structure quality:** strong silhouette (0.589) and low Davies–Bouldin (0.772)  
+- **Parsimony:** clear elbow around **K=4** (large inertia drops up to 4, then diminishing returns)  
+- **Actionability:** more useful than K=2 while avoiding over-fragmentation at higher K
+
+**Next:** fit K-means with **K=4** and interpret clusters using feature-block summaries (volume, duration, recency, timing).
+:::
+
+---
+
+### Optional: why we may explore $K=5$ (exploratory only)
+
+::: callout-warning
+$K=5$ is **not** recommended as the default operational segmentation in this project.
+
+Compared to $K=4$, separation quality declines noticeably:
+
+- Silhouette: **0.589 → 0.483** (weaker cohesion/separation)
+- Davies–Bouldin: **0.772 → 0.927** (more overlap between clusters)
+
+We may still explore $K=5$ **only as an exploratory lens** when stakeholders want finer distinctions inside high-activity groups (e.g., separating “steady frequent” from “burst-intense”). Any $K=5$ results should be presented as *additional insight* without changing the primary framework.
+:::
+
+> **Stakeholder takeaway:** K=4 remains the primary segmentation. K=5 can be used **selectively** to provide additional insights where fine distinctions are important, without altering the main operational framework.
+
+---
+
+## Phase 5 — Fit and interpret clusters (K-means, $K=4$)
+
+We fit K-means on the **clustering matrix** `prep["X"]` (robust-scaled and capped for numeric stability).  
+For interpretation, we summarise clusters back in **business units** using `contact_features_view` (raw-unit features) and translate clusters into **stakeholder-ready segments with actions**.
+
+::: callout-important
+### Training vs interpretation (do not mix these)
+- **Training:** uses `prep["X"]` (scaled + capped) so Euclidean distances are fair and stable.
+- **Interpretation:** uses raw-unit features (calls, seconds, days, shares) so segments can be explained and acted on.
+- **Privacy:** we keep `contact_id` hashed and do not merge any name/number fields into report outputs.
+:::
+
+---
+
+### Fit K-means ($K=4$) and store labels
+
+```{python}
+from sklearn.cluster import KMeans
+import numpy as np
+import pandas as pd
+
+X = prep["X"]   # final clustering matrix (scaled + capped)
+K_FINAL = 4
+
+kmeans = KMeans(n_clusters=K_FINAL, n_init=50, random_state=42)
+labels = kmeans.fit_predict(X)
+
+# One label per contact (hashed ID only)
+contact_clusters = pd.DataFrame({
+    "contact_id": contact_features_view["contact_id"].values,
+    "cluster": labels
+})
+
+cluster_sizes = (
+    contact_clusters["cluster"]
+    .value_counts()
+    .sort_index()
+    .to_frame("n_contacts")
+)
+
+cluster_sizes
+```
+
+---
+
+### Join clusters back to contact-level table (raw units)
+
+```{python}
+contact_labeled = contact_features_view.merge(contact_clusters, on="contact_id", how="left")
+
+# Hard gate: every contact must get a cluster label
+assert contact_labeled["cluster"].isna().sum() == 0
+
+contact_labeled[["contact_id", "cluster"]].head()
+```
+
+---
+
+### Cluster “cards” (robust medians + size)
+
+These cards are stakeholder-ready: **one row per cluster**, using **medians** (robust to heavy tails).
+
+```{python}
+card_features = [
+    # volume / intensity
+    "n_calls", "n_days_active", "calls_per_active_day",
+
+    # duration / relationship depth proxy
+    "total_dur_sec", "median_dur_sec", "long_call_share",
+
+    # recency / tenure
+    "recency_days", "tenure_days",
+
+    # timing mix
+    "share_business_hours", "share_evening", "share_early_morning", "share_late_night",
+    "share_open_day", "share_closed_day"
+]
+
+missing_cards = [c for c in card_features if c not in contact_labeled.columns]
+assert len(missing_cards) == 0, f"Missing card features: {missing_cards}"
+
+cards = (
+    contact_labeled
+    .groupby("cluster")[card_features]
+    .median()
+    .merge(cluster_sizes, left_index=True, right_index=True)
+    .reset_index()
+)
+
+cards = cards[["cluster", "n_contacts"] + card_features]
+cards.T
+```
+
+---
+
+### Within-cluster spread check (to avoid misleading medians)
+
+We report 25/50/75% for a few “anchor” variables.
+
+```{python}
+spread_features = ["n_calls", "total_dur_sec", "recency_days", "median_dur_sec"]
+
+spread = (
+    contact_labeled
+    .groupby("cluster")[spread_features]
+    .quantile([0.25, 0.50, 0.75])
+    .unstack(level=1)
+)
+
+spread.columns = [f"{feat}_q{int(q*100)}" for feat, q in spread.columns]
+spread = spread.reset_index()
+
+spread.T
+```
+
+---
+
+::: callout-tip
+
+### Why timing-share medians often look like 0 or 1
+
+Many contacts have only 1–2 calls. With tiny denominators, share features become extreme.
+So for timing behaviour we also report **means** and **% of contacts with any activity** in each time band.
+:::
+
+---
+
+### Timing patterns (mean shares + % with any non-business-hours / Sunday activity)
+
+```{python}
+share_cols = [
+    "share_business_hours", "share_evening", "share_early_morning", "share_late_night",
+    "share_open_day", "share_closed_day"
+]
+
+timing_mean = (
+    contact_labeled
+    .groupby("cluster")[share_cols]
+    .mean()
+    .add_suffix("_mean")
+    .reset_index()
+)
+
+timing_any = (
+    contact_labeled
+    .assign(
+        any_evening=lambda x: (x["share_evening"] > 0).astype(int),
+        any_early_morning=lambda x: (x["share_early_morning"] > 0).astype(int),
+        any_late_night=lambda x: (x["share_late_night"] > 0).astype(int),
+        any_sunday=lambda x: (x["share_closed_day"] > 0).astype(int),
+    )
+    .groupby("cluster")[["any_evening", "any_early_morning", "any_late_night", "any_sunday"]]
+    .mean()
+    .mul(100)
+    .add_suffix("_pct_contacts")
+    .reset_index()
+)
+
+timing_summary = (
+    timing_mean
+    .merge(timing_any, on="cluster", how="left")
+    .merge(cluster_sizes.reset_index(), on="cluster", how="left")
+    .sort_values("cluster")
+    .reset_index(drop=True)
+)
+
+timing_summary.T
+```
+
+---
+
+### Segment names + action policy (stakeholder-ready layer)
+
+Cluster IDs are arbitrary. We map clusters to segment labels using **behavioural signatures** from `cards`.
+
+```{python}
+sig = cards[[
+    "cluster", "n_contacts",
+    "n_calls", "total_dur_sec", "median_dur_sec", "long_call_share",
+    "recency_days", "tenure_days"
+]].copy()
+
+# Identify clusters by signatures (robust against label permutation)
+one_off_cluster = int(sig.sort_values(["n_calls", "total_dur_sec"], ascending=[True, True]).iloc[0]["cluster"])
+core_active_cluster = int(sig.sort_values(["n_calls", "n_contacts"], ascending=[False, False]).iloc[0]["cluster"])
+rare_deep_cluster = int(sig.sort_values(["median_dur_sec", "long_call_share"], ascending=[False, False]).iloc[0]["cluster"])
+
+remaining = sorted(set(sig["cluster"]) - {one_off_cluster, core_active_cluster, rare_deep_cluster})
+assert len(remaining) == 1, "Expected exactly one remaining cluster for 'warm occasional'."
+warm_cluster = int(remaining[0])
+
+segment_map = {
+    one_off_cluster: {
+        "label": "One-off / low-engagement contacts",
+        "primary_action": "Deprioritize by default; automate nurture; reactivate only if new activity appears"
+    },
+    core_active_cluster: {
+        "label": "Core active relationships",
+        "primary_action": "Retention + priority servicing; assign owner; proactive follow-ups"
+    },
+    warm_cluster: {
+        "label": "Warm occasional contacts",
+        "primary_action": "Nurture cadence (monthly/quarterly); structured check-ins to increase engagement"
+    },
+    rare_deep_cluster: {
+        "label": "Rare deep conversations",
+        "primary_action": "High-touch when active; preserve context; personalized re-engagement when dormant"
+    }
+}
+
+cluster_labels = (
+    pd.DataFrame([
+        {"cluster": k, "segment_label": v["label"], "primary_action": v["primary_action"]}
+        for k, v in segment_map.items()
+    ])
+    .merge(cluster_sizes.reset_index(), on="cluster", how="left")
+    .sort_values("cluster")
+    .reset_index(drop=True)
+)
+
+cluster_labels
+```
+
+---
+
+### Cluster narrative (auto-generated from the cards)
+
+Short and operational: “what it looks like” + “what to do”.
+
+```{python}
+def fmt(x, nd=1):
+    if pd.isna(x):
+        return "NA"
+    return f"{float(x):.{nd}f}"
+
+cards_idx = cards.set_index("cluster")
+labels_idx = cluster_labels.set_index("cluster")
+
+narr_rows = []
+for c in sorted(cards_idx.index):
+    row = cards_idx.loc[c]
+    seg = labels_idx.loc[c, "segment_label"]
+    act = labels_idx.loc[c, "primary_action"]
+
+    narrative = (
+        f"{seg}: median calls={fmt(row['n_calls'],1)}, "
+        f"median active days={fmt(row['n_days_active'],1)}, "
+        f"median total duration (sec)={fmt(row['total_dur_sec'],0)}, "
+        f"median call duration (sec)={fmt(row['median_dur_sec'],0)}, "
+        f"median recency (days)={fmt(row['recency_days'],0)}."
+    )
+
+    narr_rows.append({
+        "cluster": int(c),
+        "segment_label": seg,
+        "n_contacts": int(row["n_contacts"]),
+        "cluster_story": narrative,
+        "default_action": act
+    })
+
+cluster_story = pd.DataFrame(narr_rows).sort_values("cluster").reset_index(drop=True)
+cluster_story
+```
+
+---
+
+### “What decisions can the business make with these segments?”
+
+Policy rules we can implement in a CRM without exposing identifiers.
+
+```{python}
+rules = pd.DataFrame([
+    {
+        "segment_label": "Core active relationships",
+        "decision_use": "Prioritization and retention",
+        "operational_rule": "Assign owner and SLA; proactive check-ins",
+        "typical_pattern": "High calls, many active days, low recency"
+    },
+    {
+        "segment_label": "Warm occasional contacts",
+        "decision_use": "Nurture and growth",
+        "operational_rule": "Monthly/quarterly outreach; reminders; targeted offers",
+        "typical_pattern": "Moderate repeat calls, moderate tenure, mid recency"
+    },
+    {
+        "segment_label": "Rare deep conversations",
+        "decision_use": "High-touch exceptions and win-back",
+        "operational_rule": "Personalized follow-up; preserve context; targeted reactivation if dormant",
+        "typical_pattern": "Few calls but long conversations (high median duration / long-call share)"
+    },
+    {
+        "segment_label": "One-off / low-engagement contacts",
+        "decision_use": "Noise filtering and automation",
+        "operational_rule": "Exclude from priority lists; automate nurture only",
+        "typical_pattern": "One call, one day, small total duration, often old"
+    },
+])
+
+rules
+```
+
+---
+
+### Store artifacts for later phases (robustness, sensitivity, PCA)
+
+```{python}
+prep["K_FINAL"] = K_FINAL
+prep["kmeans"] = kmeans
+prep["labels"] = labels
+
+prep["contact_clusters"] = contact_clusters
+prep["cluster_sizes"] = cluster_sizes
+
+prep["cards"] = cards
+prep["spread"] = spread
+prep["timing_summary"] = timing_summary
+prep["cluster_labels"] = cluster_labels
+prep["cluster_story"] = cluster_story
+prep["rules"] = rules
+
+list(prep.keys())[:15]
+```
+
+
+
+---
+
+
+## Phase 6 — Robustness and sensitivity (do the clusters “hold up”?)
+
+A good clustering result is not just “a nice plot.” It should be **stable** when we rerun the algorithm and **reasonably consistent** when we change *feature blocks*.
+
+In this phase we test two kinds of robustness:
+
+1. **Seed stability:** If we change the random seed (different K-means initializations), do we get essentially the same segmentation?
+2. **Feature-block sensitivity:** If we drop one block (volume, duration, recency, timing), do the segments remain broadly similar?
+
+We quantify stability using **Adjusted Rand Index (ARI)**:
+
+
+- $ARI = 1$ means two clusterings are identical up to label permutation.
+- $ARI \approx 0$ means agreement is no better than random.
+- Negative $ARI$ can happen (worse than random agreement), usually a warning sign.
+
+::: callout-important
+### Training matrix
+All robustness tests use `prep["X"]` (robust-scaled + capped) so distances are fair and numerically stable.
+
+### Privacy
+We do not merge names/phone numbers into any robustness outputs. We only evaluate labels as arrays.
+:::
+
+---
+
+### Seed stability test (ARI across many random seeds)
+
+We run K-means many times with different `random_state`, always using $K = 4$, and compare each run to a baseline labeling.
+
+```{python}
+import numpy as np
+import pandas as pd
+
+from sklearn.cluster import KMeans
+from sklearn.metrics import adjusted_rand_score
+
+# -------------------------
+# Setup
+# -------------------------
+X = prep["X"]
+K_FINAL = int(prep.get("K_FINAL", 4))
+
+# Baseline labels (use Phase 5 if available)
+if "labels" in prep and prep.get("labels", None) is not None:
+    base_labels = np.asarray(prep["labels"])
+else:
+    km0 = KMeans(n_clusters=K_FINAL, n_init=50, random_state=42)
+    base_labels = km0.fit_predict(X)
+
+# -------------------------
+# Run many seeds
+# -------------------------
+SEEDS = list(range(0, 50))  # employer-ready default
+rows = []
+
+for s in SEEDS:
+    km = KMeans(n_clusters=K_FINAL, n_init=50, random_state=s)
+    lab = km.fit_predict(X)
+    ari = float(adjusted_rand_score(base_labels, lab))
+    rows.append({"seed": s, "ari_vs_baseline": ari, "inertia": float(km.inertia_)})
+
+seed_stability = (
+    pd.DataFrame(rows)
+    .sort_values("ari_vs_baseline", ascending=True)
+    .reset_index(drop=True)
+)
+
+seed_audit = pd.DataFrame({
+    "K_FINAL": [K_FINAL],
+    "n_seeds_tested": [len(SEEDS)],
+    "ari_min": [float(seed_stability["ari_vs_baseline"].min())],
+    "ari_p05": [float(seed_stability["ari_vs_baseline"].quantile(0.05))],
+    "ari_median": [float(seed_stability["ari_vs_baseline"].median())],
+    "ari_p95": [float(seed_stability["ari_vs_baseline"].quantile(0.95))],
+    "ari_max": [float(seed_stability["ari_vs_baseline"].max())],
+})
+
+seed_audit, seed_stability.head(10)
+```
+
+::: callout-tip
+
+### How to interpret seed ARI
+
+A practical rule of thumb:
+
+* **Very stable:** most ARI values $\ge 0.90$
+* **Reasonably stable:** most ARI values $\ge 0.75$
+* **Unstable:** many ARI values $< 0.60$
+
+If stability is weak, we usually revisit preprocessing, $K$, or consider a different clustering method.
+:::
+
+---
+
+### “Worst-case” rerun inspection (label-aligned)
+
+Even when ARI is $1.0$, K-means can output the same partition with different numeric labels (label permutation).
+So we align labels before comparing cluster sizes.
+
+```{python}
+# Identify worst seed run (lowest ARI vs baseline)
+worst = seed_stability.iloc[0]
+worst_seed = int(worst["seed"])
+
+km_worst = KMeans(n_clusters=K_FINAL, n_init=50, random_state=worst_seed)
+labels_worst = km_worst.fit_predict(X)
+
+ari_worst = float(adjusted_rand_score(base_labels, labels_worst))
+
+# Contingency table: baseline cluster IDs (rows) vs worst run IDs (cols)
+ct = pd.crosstab(
+    pd.Series(base_labels, name="baseline"),
+    pd.Series(labels_worst, name="worst")
+)
+
+# Map each worst-cluster to the baseline cluster it overlaps with most
+mapping = ct.idxmax(axis=0).to_dict()
+
+labels_worst_aligned = np.vectorize(mapping.get)(labels_worst)
+
+# Compare cluster sizes after alignment
+base_sizes = pd.Series(base_labels).value_counts().sort_index()
+worst_sizes = pd.Series(labels_worst_aligned).value_counts().sort_index()
+
+size_compare = pd.DataFrame({
+    "cluster_id": sorted(set(base_sizes.index) | set(worst_sizes.index)),
+}).set_index("cluster_id")
+
+size_compare["baseline_n"] = base_sizes.reindex(size_compare.index).fillna(0).astype(int)
+size_compare["worst_n_aligned"] = worst_sizes.reindex(size_compare.index).fillna(0).astype(int)
+size_compare["baseline_pct"] = (size_compare["baseline_n"] / size_compare["baseline_n"].sum() * 100).round(2)
+size_compare["worst_pct_aligned"] = (size_compare["worst_n_aligned"] / size_compare["worst_n_aligned"].sum() * 100).round(2)
+
+worst_seed, float(worst["ari_vs_baseline"]), ari_worst, mapping, size_compare.reset_index()
+```
+
+---
+
+### Feature-block sensitivity (drop-one-block tests)
+
+Now we test whether the segmentation depends too heavily on a single block.
+We refit K-means on reduced matrices and compare to baseline using ARI.
+
+We do “drop one block at a time” on:
+
+* volume
+* duration
+* recency
+* timing
+
+::: callout-note
+
+### Why ARI is valid here
+
+Cluster labels are arbitrary (cluster 0 in one run is not “the same” as cluster 0 in another).
+ARI is invariant to label permutation, so it compares structure, not label IDs.
+:::
+
+```{python}
+from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import RobustScaler
+
+# Rebuild X for each variant using the SAME preprocessing recipe as Phase 3:
+# - drop constant cols
+# - clip p01–p99 in raw space
+# - median impute + RobustScaler
+# - cap in scaled space
+
+SCALED_CAP = float(prep.get("scaled_cap", 10.0))  # safe default
+
+FEATURE_BLOCKS = prep["FEATURE_BLOCKS"]
+MODEL_FEATURES = prep["MODEL_FEATURES"]
+df_view = contact_features_view  # raw-unit feature table
+
+def build_X_from_features(df, features, clip_lo=0.01, clip_hi=0.99, scaled_cap=10.0):
+    X_raw = df[features].copy()
+
+    # Drop truly constant columns
+    nunique = X_raw.nunique(dropna=False)
+    constant_cols = nunique[nunique <= 1].index.tolist()
+    X_raw2 = X_raw.drop(columns=constant_cols) if constant_cols else X_raw.copy()
+
+    # Clip extremes in raw space
+    X_clip = X_raw2.copy()
+    for col in X_clip.columns:
+        lo = float(X_clip[col].quantile(clip_lo))
+        hi = float(X_clip[col].quantile(clip_hi))
+        X_clip[col] = X_clip[col].clip(lower=lo, upper=hi)
+
+    # Impute + robust scale
+    imputer = SimpleImputer(strategy="median")
+    scaler = RobustScaler(with_centering=True, with_scaling=True, quantile_range=(25.0, 75.0))
+    X_imp = imputer.fit_transform(X_clip)
+    X_scaled = scaler.fit_transform(X_imp)
+
+    # Final cap in scaled space
+    X_final = np.clip(X_scaled, -scaled_cap, scaled_cap)
+
+    return X_final, list(X_clip.columns)
+
+# Baseline rebuild for consistent comparisons
+X_base, base_feature_names = build_X_from_features(
+    df_view, MODEL_FEATURES, clip_lo=0.01, clip_hi=0.99, scaled_cap=SCALED_CAP
+)
+base_labels_for_sens = KMeans(n_clusters=K_FINAL, n_init=50, random_state=42).fit_predict(X_base)
+
+# Define variants: drop one block at a time (excluding "category")
+variants = {}
+for block in ["volume", "duration", "recency", "timing"]:
+    keep = []
+    for b, feats in FEATURE_BLOCKS.items():
+        if b == "category":
+            continue
+        if b != block:
+            keep += feats
+    variants[f"drop_{block}"] = keep
+
+rows = []
+for name, feats in variants.items():
+    X_var, feat_names_var = build_X_from_features(
+        df_view, feats, clip_lo=0.01, clip_hi=0.99, scaled_cap=SCALED_CAP
+    )
+    lab = KMeans(n_clusters=K_FINAL, n_init=50, random_state=42).fit_predict(X_var)
+    ari = float(adjusted_rand_score(base_labels_for_sens, lab))
+    rows.append({
+        "variant": name,
+        "n_features": int(X_var.shape[1]),
+        "ari_vs_baseline": ari
+    })
+
+block_sensitivity = (
+    pd.DataFrame(rows)
+    .sort_values("ari_vs_baseline", ascending=False)
+    .reset_index(drop=True)
+)
+
+block_sensitivity
+```
+
+---
+
+### Sensitivity summary (decision-useful)
+
+```{python}
+sens_audit = pd.DataFrame({
+    "K_FINAL": [K_FINAL],
+    "seed_stability_ari_median": [float(seed_audit["ari_median"].iloc[0])],
+    "seed_stability_ari_p05": [float(seed_audit["ari_p05"].iloc[0])],
+    "seed_stability_ari_min": [float(seed_audit["ari_min"].iloc[0])],
+    "block_sensitivity_ari_min": [float(block_sensitivity["ari_vs_baseline"].min())],
+    "block_sensitivity_ari_median": [float(block_sensitivity["ari_vs_baseline"].median())],
+})
+
+sens_audit.T
+```
+
+::: callout-important
+
+### What we conclude here (based on your results)
+
+* **Seed stability:** ARI is $1.0$ for all tested seeds $\Rightarrow$ K-means solution is *fully stable*.
+* **Block sensitivity:** dropping **duration** or **recency** reduces agreement (ARI $\approx 0.70$–$0.74$), which implies these blocks carry meaningful segmentation signal.
+
+This is robust enough for stakeholder-facing use, with a clear explanation of what drives the segments.
+:::
+
+---
+
+### Store robustness artifacts (for later reporting)
+
+```{python}
+prep["seed_stability"] = seed_stability
+prep["seed_audit"] = seed_audit
+
+prep["labels_worst_seed"] = labels_worst
+prep["labels_worst_seed_aligned"] = labels_worst_aligned
+prep["size_compare_worst_seed"] = size_compare.reset_index()
+prep["worst_seed_label_mapping"] = mapping
+
+prep["block_sensitivity"] = block_sensitivity
+prep["sens_audit"] = sens_audit
+
+list(prep.keys())[:25]
+```
+
+---
+
+::: callout-important
+## Phase 6 summary (robustness verdict)
+
+Based on your results:
+
+- **Seed stability (random restarts):** $ARI = 1.00$ for all tested seeds $\Rightarrow$ the $K=4$ K-means solution is **fully stable** on `prep["X"]`.
+- **Feature-block sensitivity (drop-one-block):**
+  - Drop timing: $ARI = 1.00$ (timing is not driving the segmentation)
+  - Drop volume: $ARI \approx 0.94$ (volume contributes, but is not the sole driver)
+  - Drop recency: $ARI \approx 0.74$ (recency contains meaningful signal)
+  - Drop duration: $ARI \approx 0.70$ (duration contains meaningful signal)
+
+**Decision-useful takeaway:** The segmentation is stable and not an artifact of random initialization.  
+The clusters are primarily supported by **duration** and **recency** behaviour (with volume contributing), so these are the main behavioural levers to emphasize in stakeholder explanations.
+
+:::
+
+
+---
+
+
+
+## Phase 7 — PCA visualization (for interpretation only)
+
+PCA is **not** used to train clustering.  
+We use PCA only to create a 2D “map” of contacts for storytelling, sanity-checking, and explaining separation.
+
+::: callout-warning
+### PCA is not the clustering model
+- **Clustering was trained on:** `prep["X"]` (robust-scaled + capped)
+- **PCA is used for:** visualization only (2D projection)
+If PCA looks messy, it does **not** automatically mean clustering is wrong. PCA compresses information into 2 dimensions.
+:::
+
+::: callout-important
+### Privacy
+We plot only:
+
+- PCA coordinates
+- cluster labels
+We do **not** plot names or phone numbers, and we keep `contact_id` hashed.
+:::
+
+---
+
+### Fit PCA ($2$ components) on the clustering matrix
+
+```{python}
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
+
+X = prep["X"]  # scaled + capped matrix used for clustering
+labels = np.asarray(prep["labels"])
+K_FINAL = int(prep.get("K_FINAL", 4))
+
+pca = PCA(n_components=2, random_state=42)
+Z = pca.fit_transform(X)
+
+pca_audit = pd.DataFrame({
+    "n_components": [2],
+    "explained_var_ratio_pc1": [float(pca.explained_variance_ratio_[0])],
+    "explained_var_ratio_pc2": [float(pca.explained_variance_ratio_[1])],
+    "explained_var_ratio_total_2pc": [float(pca.explained_variance_ratio_[:2].sum())],
+})
+
+pca_audit
+```
+
+---
+
+### Build a plotting table (hashed id + PCA coordinates + cluster)
+
+```{python}
+pca_view = pd.DataFrame({
+    "contact_id": contact_features_view["contact_id"].values,  # hashed only
+    "pc1": Z[:, 0],
+    "pc2": Z[:, 1],
+    "cluster": labels
+})
+
+pca_view.head()
+```
+
+---
+
+### PCA scatter plot (clusters on the 2D map)
+
+```{python}
+fig, ax = plt.subplots(figsize=(8, 6))
+
+# Plot each cluster separately for a clear legend
+for c in sorted(pca_view["cluster"].unique()):
+    sub = pca_view[pca_view["cluster"] == c]
+    ax.scatter(sub["pc1"], sub["pc2"], s=12, alpha=0.7, label=f"Cluster {c}")
+
+ax.set_title(f"PCA map of contacts (K-means clusters, $K={K_FINAL}$)")
+ax.set_xlabel("PC1")
+ax.set_ylabel("PC2")
+ax.legend(title="Cluster", fontsize=9)
+plt.show()
+```
+
+---
+
+### Optional: cluster centroids projected into PCA space
+
+This helps stakeholders see “where the centers sit” on the map.
+
+```{python}
+# K-means centroids exist in scaled feature space; PCA was fit on the same space.
+centroids = prep["kmeans"].cluster_centers_
+centroids_2d = pca.transform(centroids)
+
+cent = pd.DataFrame({
+    "cluster": list(range(K_FINAL)),
+    "pc1_centroid": centroids_2d[:, 0],
+    "pc2_centroid": centroids_2d[:, 1],
+})
+
+cent
+```
+
+```{python}
+fig, ax = plt.subplots(figsize=(8, 6))
+
+for c in sorted(pca_view["cluster"].unique()):
+    sub = pca_view[pca_view["cluster"] == c]
+    ax.scatter(sub["pc1"], sub["pc2"], s=10, alpha=0.45, label=f"Cluster {c}")
+
+# Centroids
+ax.scatter(cent["pc1_centroid"], cent["pc2_centroid"], s=120, marker="X", label="Centroids")
+
+ax.set_title(f"PCA map with centroids (K={K_FINAL})")
+ax.set_xlabel("PC1")
+ax.set_ylabel("PC2")
+ax.legend(fontsize=9)
+plt.show()
+```
+
+---
+
+### Interpretation guidance (what we conclude from PCA)
+
+::: callout-note
+PCA is a **compression** from many dimensions down to 2.
+
+Use this plot to check:
+
+* whether clusters are *roughly separated* (good sign),
+* whether some clusters overlap heavily (could be fine; segmentation can still be valid),
+* whether a small cluster looks like extreme outliers (could indicate a “special handling” segment).
+
+Do **not** use PCA to choose $K$ or to claim “the true number of clusters.”
+:::
+
+---
+
+### Store PCA artifacts (for the final report)
+
+```{python}
+prep["pca_model"] = pca
+prep["pca_audit"] = pca_audit
+prep["pca_view"] = pca_view
+prep["pca_centroids_2d"] = cent
+
+list(prep.keys())[:30]
+```
+
+---
+
+
+## What PCA tells us (interpretation only)
+
+PCA is a 2D projection of the same scaled training matrix used for clustering, `prep["X"]`.
+It does **not** change the model; it only helps us *see* separation.
+
+### Variance captured
+
+From `pca_audit`, the first two components explain:
+
+- $PC1 \approx 0.629$
+- $PC2 \approx 0.216$
+- Total (2D) $\approx 0.844$
+
+So about **84.4%** of the variance in the scaled feature space is visible in the 2D map.
+That is high enough that the plot is a meaningful sanity-check.
+
+### Visual separation (sanity-check)
+
+The PCA map shows clear structure:
+
+- One cluster sits far to the **right** on $PC1$ (strong separation in the main direction of variance).
+- One cluster is concentrated far to the **left** (tight wedge near low $PC1$ values).
+- Two clusters occupy the middle/bottom region with partial overlap, suggesting they differ in *multiple* dimensions (not fully separable in 2D, which is normal).
+
+This supports the earlier interpretation: the segmentation is not an artifact of one random run (Phase 6 already proved stability), and the clusters correspond to genuinely different behavioral regimes in feature space.
+
+### Centroids on the PCA map
+
+Projected centroids help explain “where the centers sit”:
+
+- The centroid that is far right on $PC1$ corresponds to a high-intensity / high-activity regime.
+- The centroid that is far left corresponds to low-engagement / near-baseline contacts.
+- The centroid that is high on $PC2$ indicates a behavior pattern that is not just “more or less activity,” but a different mix (often duration/recency-related structure).
+
+**Important:** overlap in PCA does not invalidate clusters. K-means was fit in the full feature space; PCA compresses information into 2 dimensions.
+
+
+---
+
+## Phase 8 — Final deliverables (stakeholder-ready outputs)
+
+In this phase we package the work into **decision-ready artifacts** that can be used in a CRM or reporting workflow **without exposing identities**.
+
+::: callout-important
+### Privacy and operational use
+- We **do not** join names or phone numbers into any outputs.
+- All contact identifiers remain **hashed**.
+- Default is **no file export**. You can enable export if you want portfolio artifacts.
+:::
+
+---
+
+### Assemble the “final segment table” (labels + key medians)
+
+```{python}
+import pandas as pd
+import numpy as np
+
+# Guardrails
+required = ["cards", "cluster_labels", "rules", "sens_audit", "pca_audit"]
+missing = [k for k in required if k not in prep]
+assert len(missing) == 0, f"Missing Phase artifacts in prep: {missing}"
+
+cards = prep["cards"].copy()
+cluster_labels = prep["cluster_labels"].copy()
+rules = prep["rules"].copy()
+
+# Join: cluster -> segment label + action
+final_segments = (
+    cards.merge(cluster_labels[["cluster", "segment_label", "primary_action"]], on="cluster", how="left")
+    .sort_values("n_contacts", ascending=False)
+    .reset_index(drop=True)
+)
+
+# Reorder columns for a stakeholder view
+front = ["cluster", "segment_label", "n_contacts", "primary_action"]
+rest = [c for c in final_segments.columns if c not in front]
+final_segments = final_segments[front + rest]
+
+final_segments
+```
+
+---
+
+### Decision rules (CRM / outreach policy)
+
+```{python}
+rules
+```
+
+---
+
+### “Executive summary” (one screen)
+
+```{python}
+sens_audit = prep["sens_audit"].copy()
+pca_audit = prep["pca_audit"].copy()
+
+# Key stats
+n_contacts_total = int(prep["contact_clusters"].shape[0])
+k_final = int(prep.get("K_FINAL", 4))
+
+seed_median = float(sens_audit["seed_stability_ari_median"].iloc[0])
+seed_min = float(sens_audit["seed_stability_ari_min"].iloc[0])
+block_min = float(sens_audit["block_sensitivity_ari_min"].iloc[0])
+
+pca_total2 = float(pca_audit["explained_var_ratio_total_2pc"].iloc[0])
+
+exec_summary = pd.DataFrame([{
+    "n_contacts_clustered": n_contacts_total,
+    "K_FINAL": k_final,
+    "seed_stability_ARI_median": seed_median,
+    "seed_stability_ARI_min": seed_min,
+    "block_sensitivity_ARI_min": block_min,
+    "pca_variance_explained_2PC": pca_total2,
+}])
+
+exec_summary
+```
+
+---
+
+### Findings (plain-English, decision-first)
+
+```{python}
+# Convert the segment table into a short narrative summary
+seg_counts = final_segments[["segment_label", "n_contacts"]].copy()
+seg_counts["share_pct"] = (seg_counts["n_contacts"] / seg_counts["n_contacts"].sum() * 100).round(2)
+
+seg_counts
+```
+
+```{python}
+# Build a compact “what it is + what to do” list (no IDs)
+labels_idx = cluster_labels.set_index("segment_label")
+
+rows = []
+for _, r in seg_counts.iterrows():
+    seg = r["segment_label"]
+    n = int(r["n_contacts"])
+    pct = float(r["share_pct"])
+    action = labels_idx.loc[seg, "primary_action"] if seg in labels_idx.index else "TBD"
+    rows.append({"segment_label": seg, "n_contacts": n, "share_pct": pct, "default_action": action})
+
+findings_table = pd.DataFrame(rows).sort_values("n_contacts", ascending=False).reset_index(drop=True)
+findings_table
+```
+
+::: callout-note
+
+### What we learned from your results
+
+* **The solution is fully stable to random initialization** (seed ARI $\approx 1$ across tested seeds), so you can rerun K-means and get the same segmentation (up to label permutation).
+* **Recency and duration matter**: dropping either block reduces agreement (lower ARI), so those blocks carry meaningful segmentation signal.
+* **PCA is supportive, not decisive**: the first two PCs explain a large share of variance, and the 2D map shows visible separation patterns that align with the segmentation.
+:::
+
+---
+
+### Limitations and “how not to misuse this”
+
+::: callout-warning
+
+### Limitations
+
+* This is **behavior-based segmentation**, not a causal model. It supports prioritization and outreach strategy, not “ground truth identities.”
+* K-means assumes roughly spherical clusters in the feature space. If your business needs non-spherical shapes, consider alternative methods later (e.g., GMM, HDBSCAN).
+* Very sparse contacts (1–2 calls) can make share features extreme; we handled this by using medians + mean/%-any checks for timing.
+:::
+
+---
+
+### Optional: export portfolio artifacts (OFF by default)
+
+```{python}
+SAVE_FILES = False  # keep False unless you explicitly want exports
+
+if SAVE_FILES:
+    # These contain NO names/phone numbers. contact_id stays hashed.
+    final_segments.to_csv("final_segments_cluster_cards.csv", index=False)
+    rules.to_csv("segment_policy_rules.csv", index=False)
+    findings_table.to_csv("segment_findings_summary.csv", index=False)
+    exec_summary.to_csv("executive_summary_metrics.csv", index=False)
+
+    print("Saved CSV files (hashed IDs only, no raw identifiers).")
+else:
+    print("SAVE_FILES=False (no files written).")
+```
+
+---
+
+
+## Phase 10 — Final wrap-up (competition framing + decision narrative)
+
+### Competition prompt (what we were given)
+
+**We were given** a historical phone-call behaviour dataset where each record represents a call event.  
+The dataset includes **timestamps, call duration, and categorised call context**, but **no business labels** such as “good customer” or “bad customer”.
+
+**Task:** Without supervision (no labels), we had to build a **contact-level segmentation** that a business could actually use for prioritisation, outreach cadence, and relationship management.
+
+**Hard constraints:**
+
+- **Privacy-first:** do not use names or phone numbers; keep identifiers hashed.
+- **Operational:** output must translate into **clear segment actions**, not just clusters.
+- **Professional robustness:** results must be stable, not a “nice plot”.
+
+---
+
+### What we had to produce (deliverable definition)
+
+We had to deliver:
+
+1. A **clean contact-level feature table** (one row per contact).
+2. A **distance-ready clustering matrix** (robust preprocessing).
+3. A final segmentation using **K-means with $K=4$**.
+4. **Stakeholder-ready interpretation** (cluster “cards” + segment labels + default actions).
+5. **Robustness evidence** (seed stability and feature sensitivity).
+6. **Interpretation-only visual sanity-check** (PCA map).
+
+---
+
+### What we built (end-to-end pipeline)
+
+1. **Audit** the raw call-event data (types, missingness, constraints).
+2. **Aggregate to contacts** (the clustering unit), producing features that capture:
+   - volume/intensity (calls, active days),
+   - relationship depth proxy (duration metrics, long-call share),
+   - recency/tenure (dormancy vs continuity),
+   - timing mix (business hours vs off-hours).
+3. **Preprocess for K-means**:
+   - clip extreme values in raw space,
+   - median imputation,
+   - robust scaling,
+   - cap scaled values for numerical stability.
+4. **Fit K-means** with $K=4$ and attach labels to contacts (hashed IDs only).
+5. **Interpret** clusters using raw units and translate into segments + actions.
+6. **Validate robustness** using ARI across seeds and drop-one-block sensitivity.
+7. **Use PCA only for visualization** (interpretation, not training).
+
+---
+
+### The segments (what we found + what to do)
+
+From the cluster cards and behaviour-based mapping, we obtained four operational segments:
+
+- **One-off / low-engagement contacts** (largest share)  
+  **Action:** deprioritize by default; automate nurture; reactivate only if new activity appears.
+
+- **Warm occasional contacts**  
+  **Action:** nurture cadence (monthly/quarterly); structured check-ins to increase engagement.
+
+- **Core active relationships**  
+  **Action:** retention and priority servicing; assign owner; proactive follow-ups.
+
+- **Rare deep conversations**  
+  **Action:** high-touch when active; preserve context; personalized re-engagement when dormant.
+
+---
+
+### Proof the solution “holds up” (robustness)
+
+**Seed stability:** ARI was $1.00$ across all tested seeds.  
+So the segmentation is fully stable to random initialization (up to label permutation).
+
+**Feature sensitivity:** dropping duration or recency reduces agreement (ARI drops to about $0.70$–$0.74$).  
+Interpretation: **duration and recency carry meaningful segmentation signal**; timing contributes less to the final partition.
+
+---
+
+### What PCA contributed (interpretation only)
+
+PCA is a 2D projection of `prep["X"]` for storytelling and sanity-checking.
+
+- The first two components explain about $84.45\%$ of variance.
+- The map shows visible structure consistent with the segmentation.
+- PCA overlap does not invalidate clusters because K-means was trained in the full feature space.
+
+---
+
+### Decision use: what a business can do with these segments
+
+- **Routing:** prioritize “Core active” + “Rare deep” to high-touch handling.
+- **Cadence:** automate outreach for “Warm occasional”; suppress manual effort for “One-off”.
+- **Reactivation:** trigger win-back campaigns for dormant “Rare deep” and “Warm occasional”.
+- **Service levels:** define SLA tiers using segment label and recency.
+
+---
+
+### Limitations (how not to misuse this)
+
+- This is behaviour segmentation, not identity inference and not causal.
+- K-means prefers spherical separation in feature space; alternative methods can be tested later.
+- Very sparse contacts can make timing shares extreme; we mitigated via robust summaries and mean/%-any checks.
+
+::: callout-note
+**Final deliverables:**
+
+- A stable $K=4$ segmentation (hashed IDs only).
+- Stakeholder-ready cluster cards + action policy rules.
+- Robustness evidence (seed ARI + block sensitivity).
+- PCA map used only for interpretation and storytelling.
+:::
+
+
+---
+

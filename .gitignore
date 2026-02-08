@@ -4,6 +4,7 @@
 _site/
 .quarto/
 .quarto-cache/
+*_files/
 *.html
 
 # -------------------------
@@ -54,3 +55,11 @@ tmp/
 
 /.quarto/
 **/*.quarto_ipynb
+
+
+# Generated CSV deliverables (keep local by default)
+executive_summary_metrics.csv
+final_segments_cluster_cards.csv
+segment_findings_summary.csv
+segment_policy_rules.csv
+

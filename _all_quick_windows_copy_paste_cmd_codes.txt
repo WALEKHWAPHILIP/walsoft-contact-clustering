@@ -1,8 +1,20 @@
 # ===============================================
-# Quick Windows CMD snippets for project files
-# ===============================================
-# This snippet prints the contents of all .qmd and .md files
-# Each file is preceded by a header line ==== filename ====
-# Use: copy-paste the line below into CMD from your project folder
+# Snippet 1: Ensure CMD uses UTF-8
+# -----------------------------------------------
+# This sets the active code page to UTF-8 so
+# special characters display correctly in CMD.
+chcp 65001
 
+# ===============================================
+# Snippet 2: Print all .qmd and .md files
+# -----------------------------------------------
+# Prints the contents of each .qmd and .md file
+# in the current folder, preceded by a header line
+# ==== filename ==== for readability.
 for %f in (*.qmd *.md) do @echo ==== %f ==== & type "%f" & echo
+
+# ===============================================
+# Snippet 3: [next command]
+# -----------------------------------------------
+# Explanation of what the next command does.
+[next command goes here]
