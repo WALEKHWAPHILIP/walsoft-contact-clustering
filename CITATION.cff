@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use this project, please cite it."
+type: software
+title: "Walsoft Contact-Level Clustering (Unsupervised Segmentation)"
+authors:
+  - family-names: "Walekhwa"
+    given-names: "Philip Tambiti Leo"
+repository-code: "https://github.com/WALEKHWAPHILIP/walsoft-contact-clustering"
+url: "https://WALEKHWAPHILIP.github.io/walsoft-contact-clustering/"
+license: "MIT"
+
+references:
+  - type: dataset
+    title: "Walsoft Semi-categorized Phone Dataset (Call Behaviour)"
+    authors:
+      - family-names: "Walekhwa"
+        given-names: "Philip Tambiti Leo"
+    url: "https://learn.walsoftcomputers.com/machine_learning/walsoft_phonecall/original_dataset_with_instructions/walsoft_semi_categorized_phone_dataset.csv"
