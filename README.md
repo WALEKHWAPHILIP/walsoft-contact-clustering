@@ -3,11 +3,29 @@ https://walekhwaphilip.github.io/walsoft-contact-clustering/
 
 # Walsoft Contact-Level Clustering (Unsupervised Segmentation)
 
+---
+
+## Live site (GitHub Pages)
+https://walekhwaphilip.github.io/walsoft-contact-clustering/
+
+## Kaggle (dataset + runnable notebook)
+**Dataset (CRM-ready contact-level features):**
+https://www.kaggle.com/datasets/walekhwatlphilip/walsoft-contact-level-call-segmentation-crm-ready
+
+**Notebook (end-to-end segmentation: KMeans vs Ward):**
+https://www.kaggle.com/code/walekhwatlphilip/walsoft-crm-contact-segmentation-kmeans-vs-ward
+
+> **How they relate:** Kaggle hosts the dataset + a runnable notebook; this repo hosts the full Quarto site + pipeline narrative.
+
+---
+
+
 **Business objective:** Segment contacts into actionable behavioral groups to support outreach planning, CRM prioritization, and relationship management.
 
 This repo demonstrates a **privacy-first, decision-driven segmentation pipeline** built on real call-behaviour logs, with **robust preprocessing**, **K selection**, **cluster interpretation**, and **stability checks** (ARI + sensitivity tests).
 
 ---
+
 
 ## Why this matters (value to a company)
 

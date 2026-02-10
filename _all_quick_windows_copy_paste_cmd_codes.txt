@@ -14,7 +14,9 @@ chcp 65001
 for %f in (*.qmd *.md) do @echo ==== %f ==== & type "%f" & echo
 
 # ===============================================
-# Snippet 3: [next command]
+# Snippet 3: Print ALL files in current folder (no subfolders)
 # -----------------------------------------------
-# Explanation of what the next command does.
-[next command goes here]
+# Prints the contents of every FILE in the current folder only.
+# Skips directories. Means: it will NOT descend into nested folders.
+# Each file is preceded by a header line for readability.
+for %f in (*) do @if not exist "%f\NUL" (echo ==== %f ==== & type "%f" & echo.)
